@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EVOLVE - Executive Verified Online Networking</title>
+    <script>
+      // Immediately set theme to prevent FOUC (Flash of Unstyled Content)
+      (function() {
+        try {
+          const storedTheme = localStorage.getItem('evolve-theme');
+          if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (_) {
+          // If localStorage is unavailable, do nothing.
+        }
+      })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Configure Tailwind CSS to use class-based dark mode.
+      // This MUST come AFTER the main tailwind script to have access to the `tailwind` object.
+      tailwind.config = {
+        darkMode: 'class',
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.24.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.545.0",
+    "three": "https://aistudiocdn.com/three@^0.167.0",
+    "three/addons/": "https://aistudiocdn.com/three@^0.167.0/examples/jsm/",
+    "three/": "https://aistudiocdn.com/three@^0.180.0/"
+  }
+}
+</script>
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  @keyframes fadeOutSlow {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+  @keyframes scaleIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  @keyframes scaleOut {
+    from { transform: scale(1); opacity: 1; }
+    to { transform: scale(0.95); opacity: 0; }
+  }
+  @keyframes slideInUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes scan-line {
+    0% { top: 0; }
+    100% { top: 100%; }
+  }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.4); opacity: 1; }
+  }
+  @keyframes draw-line {
+    from { stroke-dashoffset: 1000; }
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes draw-check-anim {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes dropdown-enter {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  @keyframes globe-spin {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+  }
+  @keyframes globe-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes task-complete-anim {
+    to {
+      opacity: 0;
+      transform: translateX(-50px) scale(0.98);
+    }
+  }
+
+  .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+  .animate-fade-out { animation: fadeOut 0.3s ease-out forwards; }
+  .animate-fade-out-slow { animation: fadeOutSlow 0.8s ease-out forwards; }
+  .animate-scale-in { animation: scaleIn 0.3s ease-out forwards; }
+  .animate-scale-out { animation: scaleOut 0.3s ease-out forwards; }
+  .animate-slide-in-up { 
+    animation: slideInUp 0.5s ease-out forwards;
+    opacity: 0; /* Start hidden */
+  }
+   .animate-dropdown-enter {
+    animation: dropdown-enter 0.2s ease-out forwards;
+  }
+  .animate-task-complete {
+    animation: task-complete-anim 0.4s ease-out forwards;
+  }
+  .scan-line {
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.7), transparent);
+    animation: scan-line 2.5s infinite alternate ease-in-out;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    border-radius: 2px;
+  }
+  .connection-dot {
+    animation: pulse-dot 3s infinite ease-in-out;
+  }
+  .connection-line {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: draw-line 2s ease-out forwards;
+  }
+  .animate-draw-check {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    animation: draw-check-anim 0.3s ease-out forwards;
+  }
+  .drop-indicator {
+    height: 2px;
+    background: rgb(34 211 238);
+    animation: fadeIn 0.2s;
+  }
+</style>
+</head>
+  <body class="bg-white dark:bg-[#060918]">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
