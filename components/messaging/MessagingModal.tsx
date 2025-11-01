@@ -49,7 +49,7 @@ export const MessagingModal: React.FC<MessagingModalProps> = ({ isOpen, onClose,
                         <MessageSquare className="h-6 w-6 text-cyan-400" />
                         <h2 className="text-xl font-bold text-white">Direct Messaging</h2>
                     </div>
-                    <button onClick={triggerClose} title="Close messaging" className="text-slate-400 hover:text-white transition-colors rounded-full p-1">
+                    <button onClick={triggerClose} title="Close messaging" aria-label="Close messaging" className="text-slate-400 hover:text-white transition-colors rounded-full p-1">
                         <X className="h-6 w-6" />
                     </button>
                 </div>

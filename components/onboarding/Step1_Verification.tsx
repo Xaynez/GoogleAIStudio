@@ -310,7 +310,7 @@ export const Step1Verification: React.FC<Step1Props> = ({ data, updateData }) =>
                     <div className="grid grid-cols-3 gap-2">
                         {idTypes.map(type => (
                             <button key={type.id} onClick={() => updateData({ idType: type.id as any })}
-                                className={`p-3 text-sm font-semibold rounded-lg border-2 transition-colors ${data.idType === type.id ? 'bg-cyan-500/20 border-cyan-500 text-white' : 'bg-slate-800 border-slate-700 hover:border-slate-500 text-slate-300'}`}>
+                                className={`p-3 text-sm font-semibold rounded-lg border-2 transition-colors ${data.idType === type.id ? 'bg-gradient-to-r from-brand-violet to-brand-cyan text-white border-transparent' : 'bg-slate-800 border-slate-700 hover:border-slate-500 text-slate-300'}`}>
                                 {type.name}
                             </button>
                         ))}
@@ -353,23 +353,6 @@ export const Step1Verification: React.FC<Step1Props> = ({ data, updateData }) =>
                          {isEmailValid === false && <AlertTriangle className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-red-400" />}
                     </div>
                      {isEmailValid === false && <p className="text-sm text-red-400 mt-1">Please enter a valid email address.</p>}
-                </div>
-                
-                 <div>
-                    <label className="flex items-start space-x-3 cursor-pointer">
-                        <input
-                            type="checkbox"
-                            checked={data.complianceAgreed}
-                            onChange={(e) => updateData({ complianceAgreed: e.target.checked })}
-                            className="mt-1 h-5 w-5 rounded bg-slate-700 border-slate-600 text-cyan-500 focus:ring-cyan-600"
-                        />
-                         <div className="flex-1">
-                            <span className="font-medium text-slate-200">{t('complianceTerms')}</span>
-                             <p className="text-sm text-slate-400">
-                                {t('complianceAgree')}
-                             </p>
-                         </div>
-                    </label>
                 </div>
             </div>
         </div>

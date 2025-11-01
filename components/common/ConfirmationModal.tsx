@@ -53,10 +53,10 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           <div className="text-slate-400 mt-2">{message}</div>
         </div>
         <div className="p-4 bg-slate-900/50 border-t border-slate-800 flex justify-center gap-4">
-          <button onClick={triggerClose} className="px-6 py-2 text-slate-300 font-semibold rounded-lg hover:bg-slate-800">
+          <button type="button" onClick={triggerClose} className="px-6 py-2 text-slate-300 font-semibold rounded-lg hover:bg-slate-800">
             {cancelText}
           </button>
-          <button onClick={handleConfirm} className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700">
+          <button type="button" onClick={handleConfirm} className="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700">
             {confirmText}
           </button>
         </div>

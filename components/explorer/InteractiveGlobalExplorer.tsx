@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -273,26 +271,26 @@ const InteractiveGlobalExplorer: React.FC = () => {
     }, []);
 
     return (
-        <div className="bg-slate-900/50 p-4 rounded-2xl shadow-lg border border-slate-800">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <GlobeIcon className="text-cyan-400" />
-                Interactive Global Explorer
+        <div className="bg-surface-card/50 p-4 rounded-2xl shadow-soft border border-border-subtle">
+            <h2 className="text-xl font-bold text-text-primary mb-4 flex items-center gap-2">
+                <GlobeIcon className="text-brand-cyan" />
+                <span className="heading-gradient">Interactive Global Explorer</span>
             </h2>
             <form onSubmit={handleSearch} className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted" />
                 <input
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search for a country or city..."
-                    className="w-full bg-slate-800 border border-slate-700 rounded-full py-2 pl-10 pr-4 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                    className="w-full bg-surface-input border border-border-input rounded-full py-2 pl-10 pr-4 text-text-primary focus:ring-2 focus:ring-brand-cyan focus:outline-none"
                 />
             </form>
 
-            <div className="relative aspect-video w-full bg-black/50 rounded-lg overflow-hidden border border-slate-700">
+            <div className="relative aspect-video w-full bg-black/50 rounded-lg overflow-hidden border border-border-subtle">
                  {isLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-20">
-                        <Loader className="h-10 w-10 animate-spin text-cyan-400" />
+                        <Loader className="h-10 w-10 animate-spin text-brand-cyan" />
                     </div>
                  )}
                 
@@ -305,7 +303,7 @@ const InteractiveGlobalExplorer: React.FC = () => {
                  {/* Street Level View */}
                  <div className={`absolute inset-0 flex items-center justify-center bg-black transition-opacity duration-500 ${viewMode === 'street' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                     {isGeneratingStreetView && (
-                        <div className="text-center text-cyan-400">
+                        <div className="text-center text-brand-cyan">
                             <Loader className="h-10 w-10 animate-spin mx-auto" />
                             <p className="mt-2">Generating Street Level View...</p>
                         </div>
@@ -324,16 +322,16 @@ const InteractiveGlobalExplorer: React.FC = () => {
                  <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
                     {viewMode === 'globe' && (
                         <>
-                            <button onClick={handleCapture} title="Capture Screenshot" className="p-2 bg-slate-800/50 rounded-full text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors backdrop-blur-sm">
+                            <button onClick={handleCapture} title="Capture Screenshot" className="p-2 bg-surface-input/50 rounded-full text-text-secondary hover:bg-surface-elevated/80 hover:text-text-primary transition-colors backdrop-blur-sm">
                                 <Camera size={20} />
                             </button>
-                            <button onClick={handleRecenter} disabled={!coordinates || isLoading} title="Focus on Location" className="p-2 bg-slate-800/50 rounded-full text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button onClick={handleRecenter} disabled={!coordinates || isLoading} title="Focus on Location" className="p-2 bg-surface-input/50 rounded-full text-text-secondary hover:bg-surface-elevated/80 hover:text-text-primary transition-colors backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed">
                                 <Crosshair size={20} />
                             </button>
                         </>
                     )}
                     {viewMode === 'street' && (
-                         <button onClick={() => setViewMode('globe')} title="Return to Globe View" className="p-2 bg-slate-800/50 rounded-full text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors backdrop-blur-sm">
+                         <button onClick={() => setViewMode('globe')} title="Return to Globe View" className="p-2 bg-surface-input/50 rounded-full text-text-secondary hover:bg-surface-elevated/80 hover:text-text-primary transition-colors backdrop-blur-sm">
                             <GlobeIcon size={20} />
                         </button>
                     )}
@@ -342,7 +340,7 @@ const InteractiveGlobalExplorer: React.FC = () => {
             
             {(error || results.length > 0) && (
                 <div className="mt-4">
-                    <h3 className="font-semibold text-white">Search Results</h3>
+                    <h3 className="font-semibold text-text-primary">Search Results</h3>
                      {error && (
                         <div className="mt-2 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-yellow-300 flex items-center gap-3">
                             <AlertTriangle size={20} />
@@ -353,8 +351,8 @@ const InteractiveGlobalExplorer: React.FC = () => {
                         <ul className="mt-2 space-y-2 max-h-48 overflow-y-auto pr-2">
                             {results.map((source, index) => source.maps && (
                                 <li key={index}>
-                                    <a href={source.maps.uri} target="_blank" rel="noopener noreferrer" className="block p-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors">
-                                        <p className="font-semibold text-cyan-400 truncate flex items-center gap-2">
+                                    <a href={source.maps.uri} target="_blank" rel="noopener noreferrer" className="block p-3 bg-surface-elevated rounded-lg hover:bg-surface-input transition-colors">
+                                        <p className="font-semibold text-link truncate flex items-center gap-2">
                                             <LinkIcon size={14} />
                                             {source.maps.title || 'View on Map'}
                                         </p>

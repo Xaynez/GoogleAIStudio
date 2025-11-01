@@ -129,30 +129,30 @@ export const Marketplace: React.FC<MarketplaceProps> = ({ userProfile, listings,
         <>
             <main className="container mx-auto max-w-7xl p-4 md:p-6 space-y-8">
                 <div className="text-center">
-                    <Store className="h-12 w-12 text-cyan-400 mx-auto mb-2" />
-                    <h1 className="text-3xl font-bold text-white">{t('marketplaceTitle')}</h1>
-                    <p className="text-slate-400">{t('marketplaceSubtitle')}</p>
+                    <Store className="h-12 w-12 text-brand-cyan mx-auto mb-2" />
+                    <h1 className="text-3xl font-bold text-text-primary">{t('marketplaceTitle')}</h1>
+                    <p className="text-text-secondary">{t('marketplaceSubtitle')}</p>
                 </div>
                 
-                <div className="sticky top-[81px] bg-slate-950/80 backdrop-blur-md z-30 py-4 px-2 rounded-lg border border-slate-800">
+                <div className="sticky top-[81px] bg-surface-bg/80 backdrop-blur-md z-30 py-4 px-2 rounded-lg border border-border-subtle">
                      <div className="flex flex-col sm:flex-row items-center gap-4">
                         <button 
                             onClick={() => onOpenCreateListing(activeCategory)}
-                            className="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 px-4 py-2 bg-cyan-600 text-white font-semibold rounded-full hover:bg-cyan-700 transition-colors"
+                            className="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 px-4 py-2 bg-brand-cyan text-text-inverted font-semibold rounded-full hover:bg-cyan-700 transition-colors"
                         >
                             <PlusCircle size={16} />
-                            <span>{t('createListing')}</span>
+                            <span data-i18n="button_create_listing">{t('button_create_listing')}</span>
                         </button>
                         <div className="relative w-full sm:w-auto sm:min-w-[200px]" ref={categoryDropdownRef}>
                             <button 
                                 onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-                                className="w-full flex items-center justify-between gap-2 px-4 py-2 bg-slate-800 text-slate-300 font-semibold rounded-full hover:bg-slate-700 transition-colors"
+                                className="w-full flex items-center justify-between gap-2 px-4 py-2 bg-surface-input text-text-primary font-semibold rounded-full hover:bg-surface-elevated transition-colors"
                             >
                                 <span>{getTranslatedCategory(activeCategory)}</span>
                                 <ChevronDown size={16} className={`transition-transform ${isCategoryDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
                             {isCategoryDropdownOpen && (
-                                <div className="absolute top-full mt-2 w-full bg-slate-800 border border-slate-700 rounded-lg shadow-lg z-10 animate-dropdown-enter">
+                                <div className="absolute top-full mt-2 w-full bg-surface-modal border border-border-subtle rounded-lg shadow-lg z-10 animate-dropdown-enter">
                                     {CATEGORIES.map(category => (
                                         <button
                                             key={category}
@@ -160,7 +160,7 @@ export const Marketplace: React.FC<MarketplaceProps> = ({ userProfile, listings,
                                                 onSelectCategory(category);
                                                 setIsCategoryDropdownOpen(false);
                                             }}
-                                            className={`w-full text-left px-4 py-2 text-sm ${activeCategory === category ? 'text-cyan-400 font-bold' : 'text-slate-300 hover:bg-slate-700'}`}
+                                            className={`w-full text-left px-4 py-2 text-sm ${activeCategory === category ? 'text-link font-bold' : 'text-text-primary hover:bg-surface-elevated'}`}
                                         >
                                             {getTranslatedCategory(category)}
                                         </button>
@@ -169,22 +169,22 @@ export const Marketplace: React.FC<MarketplaceProps> = ({ userProfile, listings,
                             )}
                         </div>
                         <div className="relative flex-grow w-full">
-                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-text-muted" />
                              <input 
                                  type="text" 
                                  placeholder={t('searchListings')} 
                                  value={searchTerm}
                                  onChange={(e) => setSearchTerm(e.target.value)}
-                                 className="w-full bg-slate-800 border border-slate-700 rounded-full py-2 pl-10 pr-4 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none" 
+                                 className="w-full bg-surface-input border border-border-input rounded-full py-2 pl-10 pr-4 text-text-primary focus:ring-2 focus:ring-brand-cyan focus:outline-none" 
                              />
                         </div>
-                         <button onClick={() => setShowFilters(!showFilters)} className="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 px-4 py-2 bg-slate-800 text-slate-300 font-semibold rounded-full hover:bg-slate-700 transition-colors relative">
+                         <button onClick={() => setShowFilters(!showFilters)} className="w-full sm:w-auto flex-shrink-0 flex items-center justify-center gap-2 px-4 py-2 bg-surface-input text-text-primary font-semibold rounded-full hover:bg-surface-elevated transition-colors relative">
                             <SlidersHorizontal size={16} />
                             <span>Filters</span>
                             {activeFilterCount > 0 && (
                                 <span
                                     key={badgeKey}
-                                    className="absolute -top-1.5 -right-1.5 flex min-w-[20px] h-5 items-center justify-center rounded-full bg-cyan-500 px-1 text-xs font-bold text-white border-2 border-slate-950 animate-scale-in"
+                                    className="absolute -top-1.5 -right-1.5 flex min-w-[20px] h-5 items-center justify-center rounded-full bg-brand-cyan px-1 text-xs font-bold text-text-inverted border-2 border-surface-bg animate-scale-in"
                                 >
                                     {activeFilterCount}
                                 </span>
@@ -194,13 +194,13 @@ export const Marketplace: React.FC<MarketplaceProps> = ({ userProfile, listings,
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value as SortByOption)}
-                                className="w-full appearance-none bg-slate-800 border border-slate-700 rounded-full py-2 pl-4 pr-10 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+                                className="w-full appearance-none bg-surface-input border border-border-input rounded-full py-2 pl-4 pr-10 text-text-primary focus:ring-2 focus:ring-brand-cyan focus:outline-none"
                             >
                                 {sortOptions.map(option => (
                                     <option key={option.value} value={option.value}>{option.label}</option>
                                 ))}
                             </select>
-                            <ChevronsUpDown className="h-4 w-4 absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                            <ChevronsUpDown className="h-4 w-4 absolute right-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
                         </div>
                      </div>
                      {showFilters && (
@@ -211,21 +211,21 @@ export const Marketplace: React.FC<MarketplaceProps> = ({ userProfile, listings,
                     )}
                 </div>
 
-                <div className="bg-slate-900/50 p-4 rounded-lg border border-slate-800">
-                    <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><BarChart2 size={20} /> {t('marketplaceAnalytics')}</h2>
+                <div className="bg-surface-card/50 p-4 rounded-lg border border-border-subtle">
+                    <h2 className="text-lg font-bold text-text-primary mb-4 flex items-center gap-2"><BarChart2 size={20} /> {t('marketplaceAnalytics')}</h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 text-center">
                         <div>
-                            <p className="text-2xl font-bold text-cyan-400">{totalListings}</p>
-                            <p className="text-xs text-slate-400">{t('totalListings')}</p>
+                            <p className="text-2xl font-bold text-link">{totalListings}</p>
+                            <p className="text-xs text-text-secondary">{t('totalListings')}</p>
                         </div>
                          <div>
-                            <p className="text-2xl font-bold text-cyan-400">{formatCurrency(totalValue)}</p>
-                            <p className="text-xs text-slate-400">{t('totalValue')}</p>
+                            <p className="text-2xl font-bold text-link">{formatCurrency(totalValue)}</p>
+                            <p className="text-xs text-text-secondary">{t('totalValue')}</p>
                         </div>
                         {Object.entries(categoryBreakdown).slice(0,3).map(([category, count]) => (
                              <div key={category}>
-                                <p className="text-2xl font-bold text-cyan-400">{count}</p>
-                                <p className="text-xs text-slate-400 truncate">{getTranslatedCategory(category as MarketplaceCategory)}</p>
+                                <p className="text-2xl font-bold text-link">{count}</p>
+                                <p className="text-xs text-text-secondary truncate">{getTranslatedCategory(category as MarketplaceCategory)}</p>
                             </div>
                         ))}
                     </div>
@@ -235,7 +235,7 @@ export const Marketplace: React.FC<MarketplaceProps> = ({ userProfile, listings,
                     {filteredAndSortedListings.length > 0 ? filteredAndSortedListings.map(listing => (
                         <ListingCard key={listing.id} listing={listing} onSelect={() => onViewListing(listing)} />
                     )) : (
-                        <div className="col-span-full text-center py-16 text-slate-400">
+                        <div className="col-span-full text-center py-16 text-text-secondary">
                             <p>No approved listings match your criteria.</p>
                         </div>
                     )}

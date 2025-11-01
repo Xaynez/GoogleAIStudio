@@ -1,6 +1,6 @@
 // Fix: Define and export PricingTier to resolve circular dependency and export errors.
 export type PricingTier = 'Standard' | 'Pro' | 'Elite';
-export type AppView = 'feed' | 'dashboard' | 'marketplace' | 'compliance' | 'network' | 'search';
+export type AppView = 'feed' | 'dashboard' | 'marketplace' | 'governanceHub' | 'network' | 'search' | 'connectors' | 'terms' | 'privacy';
 
 export interface Translation {
     text: string;
@@ -159,18 +159,24 @@ export interface OnboardingData {
     languages: string[];
     industries: string[];
     interests: string[];
-    complianceAgreed: boolean;
+    termsAccepted: boolean;
+    privacyAccepted: boolean;
+    governanceAccepted: boolean;
 }
 
 export type UserRole = 'User' | 'Compliance Officer' | 'Admin';
 
 export interface Locale {
-    code: string; // e.g., 'en-US'
-    cldr: string; // e.g., 'en'
-    name: string; // e.g., 'English (US)'
-    flag: string; // e.g., '🇺🇸'
-    dialCode: string; // e.g., '+1'
-    currency: string; // e.g., 'USD'
+  id: string;
+  code: string; // e.g., 'en-US'
+  name: string; // e.g., 'English (US)'
+  nativeName: string; // e.g., 'English'
+  country: string; // e.g., 'United States'
+  dialCode: string; // e.g., '+1'
+  flag: string; // e.g., '🇺🇸'
+  rtl: boolean;
+  font: string;
+  currency: string; // e.g., 'USD'
 }
 
 export interface UserProfile extends OnboardingData {
@@ -186,6 +192,9 @@ export interface UserProfile extends OnboardingData {
     locale: Locale;
     profileImageUrl?: string;
     coverImageUrl?: string;
+    selectedImageModel: 'gemini-image' | 'imagen';
+    selectedVideoModel: 'gemini-storyboard' | 'veo-3';
+    hasVeoApiKey: boolean;
 }
 
 // Marketplace Types
@@ -363,6 +372,46 @@ export interface TranscriptionHistoryItem {
   settings: TranscriptionSettings;
 }
 
+export type BusinessSuiteTool = 'plan' | 'deck' | 'visuals';
+
+export interface BusinessPlanData {
+    companyName: string;
+    industry: string;
+    mission: string;
+    vision: string;
+    productDetails: string;
+    financialsFile?: File;
+}
+
+export interface BusinessPlanOutput {
+    executiveSummary: string;
+    sections: string[];
+}
+
+export interface PitchDeckOutput {
+    slides: { title: string; content: string }[];
+}
+
+export interface FinancialVisualsOutput {
+    charts: { title: string; type: 'bar' | 'line' | 'pie'; data: any }[];
+}
+
+export interface ValidationIssue {
+    type: 'error' | 'warning';
+    field: string;
+    row?: number;
+    message: string;
+    suggestedFix?: string;
+}
+
+export interface FinancialAnalysisInsights {
+    trends: string[];
+    risks: string[];
+    strengths: string[];
+    recommendations: string[];
+}
+
+
 // Live API Types
 export interface LiveSession {
   sendRealtimeInput: (input: { media: { data: string, mimeType: string }}) => void;
@@ -384,4 +433,13 @@ export interface LiveServerMessage {
     turnComplete?: boolean;
     interrupted?: boolean;
   };
+}
+
+// Governance Types
+export interface AuditLog {
+    id: string;
+    timestamp: string;
+    actor: string; // User's full name or 'System'
+    event: string;
+    details: Record<string, any>;
 }

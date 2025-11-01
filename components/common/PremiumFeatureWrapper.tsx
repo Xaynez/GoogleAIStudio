@@ -1,6 +1,7 @@
 import React from 'react';
-import { Lock, Zap } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import type { PricingTier } from '../../types';
+import { useTranslation } from '../../i18n';
 
 interface PremiumFeatureWrapperProps {
   userTier: PricingTier;
@@ -23,6 +24,7 @@ export const PremiumFeatureWrapper: React.FC<PremiumFeatureWrapperProps> = ({
   onUpgradeClick,
   children
 }) => {
+  const { t } = useTranslation();
   const hasAccess = tierLevels[userTier] >= tierLevels[requiredTier];
 
   if (hasAccess) {
@@ -42,10 +44,9 @@ export const PremiumFeatureWrapper: React.FC<PremiumFeatureWrapperProps> = ({
         </p>
         <button 
           onClick={onUpgradeClick}
-          className="flex items-center gap-2 px-6 py-2 bg-yellow-500 text-slate-900 font-bold rounded-lg shadow-md hover:bg-yellow-400 transition-colors"
+          className="px-6 py-2 bg-yellow-500 text-slate-900 font-bold rounded-lg shadow-md hover:bg-yellow-400 transition-colors"
         >
-          <Zap size={16} />
-          Upgrade Plan
+          Choose
         </button>
       </div>
     </div>

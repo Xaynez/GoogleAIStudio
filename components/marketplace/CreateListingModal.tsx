@@ -360,7 +360,7 @@ export const CreateListingModal: React.FC<CreateListingModalProps> = ({ userProf
         
         return (
             <>
-                <div className="p-6 max-h-[70vh] overflow-y-auto space-y-4">
+                <div className="p-6 flex-grow overflow-y-auto space-y-4">
                     {/* Basic Info */}
                     <div>
                         <label htmlFor="title" className="block text-sm font-medium text-slate-300 mb-1">{t('listingTitleLabel')}</label>
@@ -506,14 +506,14 @@ export const CreateListingModal: React.FC<CreateListingModalProps> = ({ userProf
                                 <legend className="sr-only">Sponsorship Plan</legend>
                                 <div>
                                     <input type="radio" id="plan-daily" name="plan" value="daily" checked={plan === 'daily'} onChange={() => setPlan('daily')} className="sr-only" />
-                                    <label htmlFor="plan-daily" className={`block p-3 text-center rounded-lg border-2 cursor-pointer ${plan === 'daily' ? 'bg-cyan-500/20 border-cyan-500' : 'bg-slate-800 border-slate-700'}`}>
+                                    <label htmlFor="plan-daily" className={`block p-3 text-center rounded-lg border-2 cursor-pointer ${plan === 'daily' ? 'border-transparent bg-gradient-to-r from-brand-violet to-brand-cyan' : 'bg-slate-800 border-slate-700'}`}>
                                         <span className="font-bold text-white">Daily</span>
                                         <span className="block text-xs text-slate-400">$5 / day</span>
                                     </label>
                                 </div>
                                 <div>
                                     <input type="radio" id="plan-monthly" name="plan" value="monthly" checked={plan === 'monthly'} onChange={() => setPlan('monthly')} className="sr-only" />
-                                    <label htmlFor="plan-monthly" className={`block p-3 text-center rounded-lg border-2 cursor-pointer ${plan === 'monthly' ? 'bg-cyan-500/20 border-cyan-500' : 'bg-slate-800 border-slate-700'}`}>
+                                    <label htmlFor="plan-monthly" className={`block p-3 text-center rounded-lg border-2 cursor-pointer ${plan === 'monthly' ? 'border-transparent bg-gradient-to-r from-brand-violet to-brand-cyan' : 'bg-slate-800 border-slate-700'}`}>
                                         <span className="font-bold text-white">Monthly</span>
                                         <span className="block text-xs text-slate-400">$125 / month</span>
                                     </label>
@@ -531,7 +531,7 @@ export const CreateListingModal: React.FC<CreateListingModalProps> = ({ userProf
 
                 </div>
 
-                <div className="p-6 bg-slate-900/50 border-t border-slate-800 flex justify-between items-center">
+                <div className="p-6 bg-slate-900/50 border-t border-slate-800 flex justify-between items-center flex-shrink-0">
                     <div>
                         <span className="text-sm text-slate-400">{t('totalCostLabel')} </span>
                         <span className="text-xl font-bold text-cyan-400">${totalCost}</span>
@@ -552,9 +552,9 @@ export const CreateListingModal: React.FC<CreateListingModalProps> = ({ userProf
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" aria-modal="true" role="dialog">
             <form 
                 onSubmit={handleSubmit}
-                className={`bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 ease-out ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}
+                className={`bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl h-[90vh] flex flex-col transform transition-all duration-300 ease-out ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}
             >
-                <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+                <div className="p-6 border-b border-slate-800 flex justify-between items-center flex-shrink-0">
                     <h2 className="text-xl font-bold text-white flex items-center gap-2"><PlusCircle className="text-cyan-400"/> {t('createListingTitle')}</h2>
                     <button type="button" onClick={triggerClose} className="text-slate-400 hover:text-white transition-colors rounded-full p-1">
                         <X className="h-6 w-6" />

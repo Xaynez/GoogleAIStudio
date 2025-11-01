@@ -125,7 +125,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMess
                         placeholder="Type a message..."
                         className="w-full bg-slate-800 border border-slate-700 rounded-full py-3 pl-4 pr-14 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none"
                     />
-                    <button onClick={handleSend} title="Send message" className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-cyan-600 text-white rounded-full hover:bg-cyan-700 transition-colors">
+                    <button onClick={handleSend} title="Send message" aria-label="Send message" className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-cyan-600 text-white rounded-full hover:bg-cyan-700 transition-colors">
                         <Send className="h-5 w-5" />
                     </button>
                 </div>

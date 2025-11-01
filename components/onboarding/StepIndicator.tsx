@@ -11,10 +11,11 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep }) => 
   
   const steps = [
       { number: 1, title: t('stepVerification') },
-      { number: 2, title: t('stepProfile') },
-      { number: 3, title: t('stepInterests') },
-      { number: 4, title: t('stepSecurity') },
-      { number: 5, title: t('stepComplete') },
+      { number: 2, title: t('stepLegal') },
+      { number: 3, title: t('stepProfile') },
+      { number: 4, title: t('stepInterests') },
+      { number: 5, title: t('stepSecurity') },
+      { number: 6, title: t('stepComplete') },
   ];
 
   return (

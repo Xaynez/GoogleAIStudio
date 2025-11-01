@@ -2,13 +2,14 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { X, User, Briefcase, GraduationCap, Languages, Building2, Sparkles, Send, Image as ImageIcon, Video, FileText, Edit, Plus, Trash2, ThumbsUp, MessageSquare, ChevronsUpDown, Bot, Loader, BadgePercent, MapPin, Award, TrendingUp, ChevronDown, BarChart2, CalendarClock, Eye, Users, Camera } from 'lucide-react';
 import type { UserProfile, Post, PostType, ExperienceEntry, EducationEntry, Comment, DegreeType, TranslatableContent } from '../types';
 import { LANGUAGES as allLanguages } from '../constants';
-import { NEW_MARKETPLACE_CATEGORIES as allInterests } from '../../constants';
+import { NEW_MARKETPLACE_CATEGORIES as allInterests } from '../constants';
 import { AIStudioPanel } from './AIStudioPanel';
 import { PostCard } from './feed/PostCard';
 import { enhanceSummaryWithGemini } from '../../services/geminiService';
 import { useTranslation } from '../../i18n';
 import { TranslatedText } from './common/TranslatedText';
 import { ImageEditorModal } from './common/ImageEditorModal';
+import { BusinessSuiteModal } from './ai/BusinessSuiteModal';
 
 const allIndustries = ["Technology", "Finance", "Healthcare", "Real Estate", "Manufacturing", "Energy", "Consulting", "Media"];
 const DEGREE_TYPES: DegreeType[] = ['BA', 'Masters', 'PhD', 'Diploma', 'Micro-credential', 'Certificate'];
@@ -168,8 +169,8 @@ const MultiSelectChip: React.FC<{
                     onClick={() => handleToggle(option)}
                     className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
                         selected.includes(option)
-                            ? 'bg-cyan-500 text-slate-900'
-                            : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                            ? 'bg-gradient-to-r from-brand-violet to-brand-cyan text-white'
+                            : 'bg-surface-input text-text-primary hover:bg-surface-card'
                     }`}
                 >
                     {option}
@@ -188,6 +189,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, use
     const [isEnhancing, setIsEnhancing] = useState(false);
     const [isImageEditorOpen, setIsImageEditorOpen] = useState(false);
     const [imageToEdit, setImageToEdit] = useState<{ type: 'profile' | 'cover'; url: string | null }>({ type: 'profile', url: null });
+    const [isBusinessSuiteOpen, setIsBusinessSuiteOpen] = useState(false);
     
     useEffect(() => {
         if(isOpen) {
@@ -288,7 +290,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, use
     const renderTabContent = () => {
         switch (activeTab) {
             case 'AI Studio':
-                return <AIStudioPanel userProfile={userProfile} />;
+                return <AIStudioPanel userProfile={userProfile} onLaunchBusinessSuite={() => setIsBusinessSuiteOpen(true)} />;
             case 'Analytics':
                 return <AnalyticsTab posts={userProfile.activity} />;
             case 'Activity':
@@ -531,73 +533,76 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, use
                 imageUrl={imageToEdit.url}
                 title={imageToEdit.type === 'cover' ? t('editCoverImage') : t('editProfilePhoto')}
             />
+            <BusinessSuiteModal isOpen={isBusinessSuiteOpen} onClose={() => setIsBusinessSuiteOpen(false)} userProfile={userProfile} />
             <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" aria-modal="true" role="dialog">
-                <div className={`bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-4xl transform transition-all duration-300 ease-out ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}>
-                    <div className="relative">
-                        <div className="h-48 bg-slate-700 rounded-t-2xl relative group">
-                            {editedProfile.coverImageUrl && (
-                                <img src={editedProfile.coverImageUrl} alt="Cover" className="w-full h-full object-cover rounded-t-2xl" />
-                            )}
-                            {isEditing && (
-                                <button onClick={() => openImageEditor('cover')} className="absolute inset-0 bg-black/50 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                    <Camera size={24} />
-                                    <span className="ml-2 font-semibold">{t('editCoverImage')}</span>
-                                </button>
-                            )}
-                        </div>
-                        
-                        <div className="absolute -bottom-12 left-6">
-                            <div className="relative group">
-                                <img 
-                                    src={editedProfile.profileImageUrl || `https://i.pravatar.cc/150?u=${editedProfile.ssoEmail}`} 
-                                    alt={editedProfile.fullName} 
-                                    className="h-24 w-24 rounded-full border-4 border-slate-900 object-cover bg-slate-700" 
-                                />
+                <div className={`bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col transform transition-all duration-300 ease-out ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}>
+                    <div className="flex-shrink-0">
+                        <div className="relative">
+                            <div className="h-48 bg-slate-700 rounded-t-2xl relative group">
+                                {editedProfile.coverImageUrl && (
+                                    <img src={editedProfile.coverImageUrl} alt="Cover" className="w-full h-full object-cover rounded-t-2xl" />
+                                )}
                                 {isEditing && (
-                                    <button onClick={() => openImageEditor('profile')} className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                        <Camera size={18} />
+                                    <button onClick={() => openImageEditor('cover')} className="absolute inset-0 bg-black/50 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                        <Camera size={24} />
+                                        <span className="ml-2 font-semibold">{t('editCoverImage')}</span>
                                     </button>
                                 )}
                             </div>
+                            
+                            <div className="absolute -bottom-12 left-6">
+                                <div className="relative group">
+                                    <img 
+                                        src={editedProfile.profileImageUrl || `https://i.pravatar.cc/150?u=${editedProfile.ssoEmail}`} 
+                                        alt={editedProfile.fullName} 
+                                        className="h-24 w-24 rounded-full border-4 border-slate-900 object-cover bg-slate-700" 
+                                    />
+                                    {isEditing && (
+                                        <button onClick={() => openImageEditor('profile')} className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                            <Camera size={18} />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                             <button onClick={triggerClose} className="absolute top-4 right-4 text-white bg-black/40 rounded-full p-2 hover:bg-black/60 transition-colors">
+                                <X className="h-6 w-6" />
+                            </button>
                         </div>
 
-                         <button onClick={triggerClose} className="absolute top-4 right-4 text-white bg-black/40 rounded-full p-2 hover:bg-black/60 transition-colors">
-                            <X className="h-6 w-6" />
-                        </button>
-                    </div>
-
-                    <div className="pt-16 px-6 pb-4 border-b border-slate-800 flex justify-between items-center">
-                        <div>
-                            <h2 className="text-2xl font-bold text-white">{editedProfile.fullName}</h2>
-                            <p className="text-base text-slate-400">{editedProfile.jobTitle}</p>
+                        <div className="pt-16 px-6 pb-4 border-b border-slate-800 flex justify-between items-center">
+                            <div>
+                                <h2 className="text-2xl font-bold text-white">{editedProfile.fullName}</h2>
+                                <p className="text-base text-slate-400">{editedProfile.jobTitle}</p>
+                            </div>
+                             {isCurrentUser && !isEditing && (
+                               <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-slate-200 font-semibold rounded-lg hover:bg-slate-700 transition-colors text-sm">
+                                    <Edit size={16}/> {t('editProfile')}
+                               </button>
+                            )}
                         </div>
-                         {isCurrentUser && !isEditing && (
-                           <button onClick={() => setIsEditing(true)} className="flex items-center gap-2 px-4 py-2 bg-slate-800 text-slate-200 font-semibold rounded-lg hover:bg-slate-700 transition-colors text-sm">
-                                <Edit size={16}/> {t('editProfile')}
-                           </button>
-                        )}
+
+
+                        <div className="border-b border-slate-800 px-6">
+                            <nav className="-mb-px flex space-x-6 overflow-x-auto">
+                                {tabs.map(tab => (
+                                    <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+                                        className={`flex items-center gap-2 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.key ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-500'}`}>
+                                        {tab.key === 'AI Studio' && <Bot size={16} />}
+                                        {tab.key === 'Analytics' && <BarChart2 size={16} />}
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </nav>
+                        </div>
                     </div>
 
-
-                    <div className="border-b border-slate-800 px-6">
-                        <nav className="-mb-px flex space-x-6 overflow-x-auto">
-                            {tabs.map(tab => (
-                                <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                                    className={`flex items-center gap-2 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.key ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-500'}`}>
-                                    {tab.key === 'AI Studio' && <Bot size={16} />}
-                                    {tab.key === 'Analytics' && <BarChart2 size={16} />}
-                                    {tab.label}
-                                </button>
-                            ))}
-                        </nav>
-                    </div>
-
-                    <div className="p-6 max-h-[50vh] overflow-y-auto">
+                    <div className="p-6 flex-grow overflow-y-auto">
                         {renderTabContent()}
                     </div>
 
                     {isEditing && (
-                        <div className="p-4 bg-slate-900/50 border-t border-slate-800 flex justify-end gap-4">
+                        <div className="p-4 bg-slate-900/50 border-t border-slate-800 flex justify-end gap-4 flex-shrink-0">
                             <button onClick={handleCancelEdit} className="px-6 py-2 text-slate-300 font-semibold rounded-lg hover:bg-slate-800">{t('cancel')}</button>
                             <button onClick={handleSaveChanges} className="px-6 py-2 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-700">{t('saveChanges')}</button>
                         </div>

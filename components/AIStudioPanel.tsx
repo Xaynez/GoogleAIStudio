@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bot, Image as ImageIcon, Video, Search, Loader, Download, ExternalLink, FileSignature, UploadCloud, X, FilePenLine, Copy, Settings, ChevronsUpDown, CheckCircle, FileAudio, Trash2, Eye, RotateCcw } from 'lucide-react';
-import { generateImageWithImagen, editImageWithGemini, generateVideos, getVideosOperation, searchWebWithGemini, rewriteTextWithGemini, suggestPostIdeasWithGemini, generatePostContentWithGemini, transcribeAudioWithGemini } from '../services/geminiService';
-import type { UserProfile, PostType, TranscriptionSettings, TranscriptionResult, TranscriptionHistoryItem } from '../types';
-import { useTranslation } from '../i18n';
-import { SUPPORTED_LOCALES } from '../constants';
+import { Bot, Image as ImageIcon, Video, Search, Loader, Download, ExternalLink, FileSignature, UploadCloud, X, FilePenLine, Copy, Settings, ChevronsUpDown, CheckCircle, FileAudio, Trash2, Eye, RotateCcw, Briefcase } from 'lucide-react';
+import { generateImageWithImagen, editImageWithGemini, generateVideos, getVideosOperation, searchWebWithGemini, rewriteTextWithGemini, suggestPostIdeasWithGemini, generatePostContentWithGemini, transcribeAudioWithGemini } from '../../services/geminiService';
+import type { UserProfile, PostType, TranscriptionSettings, TranscriptionResult, TranscriptionHistoryItem } from '../../types';
+import { useTranslation } from '../../i18n';
+import { SUPPORTED_LOCALES } from '../../constants';
 import { ConfirmationModal } from './common/ConfirmationModal';
-
+import { Tooltip } from './common/Tooltip';
 
 interface AIStudioPanelProps {
     userProfile: UserProfile;
+    onLaunchBusinessSuite: () => void;
 }
 
 const AITool: React.FC<{
@@ -45,7 +46,7 @@ const TRANSCRIPTION_SETTINGS_KEY = 'evolve_transcription_settings';
 const TRANSCRIPTION_HISTORY_KEY = 'evolve_transcription_history';
 const SUPPORTED_MIME_TYPES = ['audio/', 'video/'];
 
-export const AIStudioPanel: React.FC<AIStudioPanelProps> = ({ userProfile }) => {
+export const AIStudioPanel: React.FC<AIStudioPanelProps> = ({ userProfile, onLaunchBusinessSuite }) => {
     const { t } = useTranslation();
     
     // Unified Media Generation State
@@ -411,7 +412,7 @@ export const AIStudioPanel: React.FC<AIStudioPanelProps> = ({ userProfile }) => 
                     {t('aiStudioUnlockDesc')}
                 </p>
                 <button className="mt-6 px-6 py-3 bg-cyan-600 text-white font-semibold rounded-lg shadow-md hover:bg-cyan-700">
-                    {t('viewPlans')}
+                    Choose
                 </button>
             </div>
         );
@@ -423,6 +424,12 @@ export const AIStudioPanel: React.FC<AIStudioPanelProps> = ({ userProfile }) => 
                 <h2 className="text-2xl font-bold text-white flex items-center justify-center gap-3"><Bot /> {t('aiStudio')}</h2>
                 <p className="text-slate-400 mt-2">{t('aiStudioSubtitle')}</p>
             </div>
+
+            <AITool icon={<Briefcase size={24} />} title={t('businessSuiteTitle')} description={t('businessSuiteDescription')}>
+                <button onClick={onLaunchBusinessSuite} className="w-full sm:w-auto px-4 py-2 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-700">
+                    {t('launchSuite')}
+                </button>
+            </AITool>
 
             {/* Post Ideas */}
             <AITool icon={<FileSignature size={24} />} title={t('postIdeasTitle')} description={t('postIdeasDescription')}>
@@ -461,8 +468,8 @@ export const AIStudioPanel: React.FC<AIStudioPanelProps> = ({ userProfile }) => 
                                     onClick={() => setPostTypeOption(type)}
                                     className={`px-3 py-1 text-xs font-medium rounded-full capitalize transition-colors ${
                                         postTypeOption === type
-                                            ? 'bg-cyan-500 text-slate-900'
-                                            : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                                            ? 'bg-gradient-to-r from-brand-violet to-brand-cyan text-white'
+                                            : 'bg-surface-input text-text-primary hover:bg-surface-card'
                                     }`}
                                 >
                                     {type}
@@ -488,10 +495,10 @@ export const AIStudioPanel: React.FC<AIStudioPanelProps> = ({ userProfile }) => 
              {/* Unified Image/Video Generation */}
             <AITool icon={<ImageIcon size={24} />} title={t('aiStudioMediaTitle')} description={t('aiStudioMediaDesc')}>
                 <div className="mb-4">
-                    <fieldset className="flex items-center gap-2 p-1 bg-slate-700/50 rounded-full w-min">
+                    <fieldset className="flex items-center gap-2 p-1 bg-surface-input/50 rounded-full w-min">
                         <legend className="sr-only">Select Media Type</legend>
-                        <button onClick={() => handleModeChange('image')} className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-colors ${mediaMode === 'image' ? 'bg-cyan-500 text-slate-900' : 'text-slate-300'}`}>{t('aiStudioModeImage')}</button>
-                        <button onClick={() => handleModeChange('video')} className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-colors ${mediaMode === 'video' ? 'bg-cyan-500 text-slate-900' : 'text-slate-300'}`}>{t('aiStudioModeVideo')}</button>
+                        <button onClick={() => handleModeChange('image')} className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-colors ${mediaMode === 'image' ? 'bg-gradient-to-r from-brand-violet to-brand-cyan text-white' : 'text-text-primary hover:bg-surface-elevated/50'}`}>{t('aiStudioModeImage')}</button>
+                        <button onClick={() => handleModeChange('video')} className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-colors ${mediaMode === 'video' ? 'bg-gradient-to-r from-brand-violet to-brand-cyan text-white' : 'text-text-primary hover:bg-surface-elevated/50'}`}>{t('aiStudioModeVideo')}</button>
                     </fieldset>
                 </div>
                 
@@ -645,8 +652,8 @@ export const AIStudioPanel: React.FC<AIStudioPanelProps> = ({ userProfile }) => 
                                 onClick={() => setRewriteTone(tone)}
                                 className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
                                     rewriteTone === tone
-                                        ? 'bg-cyan-500 text-slate-900'
-                                        : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                                        ? 'bg-gradient-to-r from-brand-violet to-brand-cyan text-white'
+                                        : 'bg-surface-input text-text-primary hover:bg-surface-card'
                                 }`}
                             >
                                 {tone}
@@ -684,7 +691,7 @@ export const AIStudioPanel: React.FC<AIStudioPanelProps> = ({ userProfile }) => 
                     >
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                             <UploadCloud className="w-8 h-8 mb-2 text-slate-400" />
-                            <p className="mb-2 text-sm text-slate-400"><span className="font-semibold">{t('aiStudioUploadAVPrompt')}</span></p>
+                            <p className="mb-2 text-sm text-slate-400"><span className="font-semibold">{t('aiStudioUploadAVPrompt')}</span> or drag and drop</p>
                             <p className="text-xs text-slate-500">{t('aiStudioUploadAVFormats')}</p>
                         </div>
                         <input type="file" accept="audio/*,video/*" className="hidden" onChange={(e) => e.target.files && validateFile(e.target.files[0])} />
@@ -778,9 +785,15 @@ export const AIStudioPanel: React.FC<AIStudioPanelProps> = ({ userProfile }) => 
                                     <p className="text-xs text-slate-400">{new Date(item.timestamp).toLocaleString()}</p>
                                 </div>
                                 <div className="flex-shrink-0 flex items-center gap-2">
-                                    <button onClick={() => handleViewHistoryItem(item)} title={t('aiStudioHistoryView')} className="p-2 text-slate-300 hover:bg-slate-700 rounded-full"><Eye size={16}/></button>
-                                    <button onClick={() => handleDownloadHistoryItem(item)} title={t('aiStudioHistoryDownload')} className="p-2 text-slate-300 hover:bg-slate-700 rounded-full"><Download size={16}/></button>
-                                    <button onClick={() => handleDeleteHistoryItem(item)} title={t('aiStudioHistoryDelete')} className="p-2 text-red-400 hover:bg-red-500/20 rounded-full"><Trash2 size={16}/></button>
+                                    <Tooltip text={t('aiStudioHistoryView')} position="top">
+                                        <button onClick={() => handleViewHistoryItem(item)} className="p-2 text-slate-300 hover:bg-slate-700 rounded-full"><Eye size={16}/></button>
+                                    </Tooltip>
+                                    <Tooltip text={t('aiStudioHistoryDownload')} position="top">
+                                        <button onClick={() => handleDownloadHistoryItem(item)} className="p-2 text-slate-300 hover:bg-slate-700 rounded-full"><Download size={16}/></button>
+                                    </Tooltip>
+                                    <Tooltip text={t('aiStudioHistoryDelete')} position="top">
+                                        <button onClick={() => handleDeleteHistoryItem(item)} className="p-2 text-red-400 hover:bg-red-500/20 rounded-full"><Trash2 size={16}/></button>
+                                    </Tooltip>
                                 </div>
                             </div>
                         ))}

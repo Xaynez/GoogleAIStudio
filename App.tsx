@@ -1,19 +1,20 @@
-
-
-import React, { useState, useEffect } from 'react';
+// Fix: Import 'useCallback' from 'react' to resolve 'Cannot find name' error.
+import React, { useState, useEffect, useCallback } from 'react';
 import { LandingPage } from './components/LandingPage';
 import { OnboardingWizard } from './components/onboarding/OnboardingWizard';
 import { Dashboard } from './components/Dashboard';
 import { Marketplace } from './components/marketplace/Marketplace';
 import { Header } from './components/Header';
 import { ProfileModal } from './components/ProfileModal';
-import { ComplianceDashboard } from './components/compliance/ComplianceDashboard';
+import { GovernanceHubPage } from './components/governance/GovernanceHubPage';
 import { MessagingModal } from './components/messaging/MessagingModal';
 import { Feed } from './components/feed/Feed';
 import { UpgradeModal } from './components/common/UpgradeModal';
-import type { OnboardingData, PricingTier, UserProfile, MarketplaceListing, Conversation, MarketplaceCategory, AppView, Post, Comment, FeedItem, TranslatableContent, PostType, Notification, NetworkUser, Message, WebSearchResults, ReactionType, PostAuthor } from './types';
-import { MOCK_MARKETPLACE_LISTINGS, MOCK_CONVERSATIONS, SUPPORTED_LOCALES, MOCK_FEED_ITEMS, MOCK_NOTIFICATIONS, MOCK_NETWORK_USERS, MOCK_FEED_POSTS } from './constants';
-import { LocaleProvider } from './i18n';
+import type { OnboardingData, PricingTier, UserProfile, MarketplaceListing, Conversation, MarketplaceCategory, AppView, Post, Comment, FeedItem, TranslatableContent, PostType, Notification, NetworkUser, Message, WebSearchResults, ReactionType, PostAuthor, AuditLog, Locale } from './types';
+// Fix: Removed MOCK_FEED_POSTS as it is not exported from constants.ts and not used in this file.
+import { MOCK_MARKETPLACE_LISTINGS, MOCK_CONVERSATIONS, SUPPORTED_LOCALES, MOCK_FEED_ITEMS, MOCK_NOTIFICATIONS, MOCK_NETWORK_USERS } from './constants';
+// Fix: Renamed imported 'Locale' instance to 'localeManager' to avoid name collision with the 'Locale' type.
+import { LocaleProvider, useTranslation, localeManager } from './i18n';
 import { TranslatorProvider } from './hooks/useTranslator';
 import { CreateListingModal } from './components/marketplace/CreateListingModal';
 import { MyNetwork } from './components/network/MyNetwork';
@@ -31,6 +32,9 @@ import { searchWebWithGemini, generateImageWithImagen, searchMapsWithGemini } fr
 import { ChatBot } from './components/ai/ChatBot';
 import { LiveAssistant } from './components/ai/LiveAssistant';
 import { CalendarSyncModal } from './components/CalendarSyncModal';
+import { ConnectorsPage } from './components/connectors/ConnectorsPage';
+import { TermsOfUsePage } from './components/terms/TermsOfUsePage';
+import { PrivacyPolicyPage } from './components/privacy/PrivacyPolicyPage';
 
 const MOCK_ELITE_USER: UserProfile = {
   fullName: 'Alex Thornton',
@@ -78,7 +82,9 @@ const MOCK_ELITE_USER: UserProfile = {
   languages: ['English', 'German'],
   industries: ['Technology', 'Finance', 'AI'],
   interests: ['Investments', 'Partnerships', 'Business for Sale'],
-  complianceAgreed: true,
+  termsAccepted: true,
+  privacyAccepted: true,
+  governanceAccepted: true,
   tier: 'Elite',
   role: 'Admin', // Give them Admin role to see everything
   isBiometricEnrolled: true,
@@ -91,6 +97,9 @@ const MOCK_ELITE_USER: UserProfile = {
   activity: MOCK_FEED_ITEMS.filter(p => 'author' in p && p.author.id === 'user-1') as Post[],
   profileImageUrl: `https://i.pravatar.cc/150?u=alex.thornton@evolve.net`,
   coverImageUrl: 'https://picsum.photos/seed/cover-1/1200/400',
+  selectedImageModel: 'imagen',
+  selectedVideoModel: 'gemini-storyboard',
+  hasVeoApiKey: false,
 };
 
 
@@ -125,45 +134,62 @@ const SharePostModal: React.FC<{
 
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" aria-modal="true" role="dialog">
-            <div className={`bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 ease-out ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}>
-                <div className="p-4 border-b border-slate-800 flex justify-between items-center">
-                    <h2 className="text-xl font-bold text-white">Share Post to Feed</h2>
-                    <button onClick={triggerClose} title="Close" className="text-slate-400 hover:text-white transition-colors rounded-full p-1"><X className="h-6 w-6" /></button>
+            <div className={`bg-surface-modal border border-border-subtle rounded-2xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 ease-out ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}>
+                <div className="p-4 border-b border-border-subtle flex justify-between items-center">
+                    <h2 className="text-xl font-bold text-text-primary">Share Post to Feed</h2>
+                    <button onClick={triggerClose} title="Close" aria-label="Close share post modal" className="text-text-secondary hover:text-text-primary transition-colors rounded-full p-1"><X className="h-6 w-6" /></button>
                 </div>
                 <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
                     <div className="flex gap-4">
-                        <User className="h-10 w-10 p-2 bg-slate-700 rounded-full text-slate-300 flex-shrink-0" />
+                        <User className="h-10 w-10 p-2 bg-surface-elevated rounded-full text-text-secondary flex-shrink-0" />
                         <textarea
                             value={thoughts}
                             onChange={(e) => setThoughts(e.target.value)}
                             placeholder="Add your thoughts... (optional)"
-                            className="w-full bg-transparent text-lg text-white focus:outline-none resize-none"
+                            className="w-full bg-transparent text-lg text-text-primary focus:outline-none resize-none"
                             rows={4}
                         />
                     </div>
-                    <div className="ml-14 border border-slate-700 rounded-lg p-3">
+                    <div className="ml-14 border border-border-subtle rounded-lg p-3">
                         <div className="flex items-center gap-2">
-                            <User className="h-6 w-6 p-1 bg-slate-600 rounded-full" />
+                            <User className="h-6 w-6 p-1 bg-surface-elevated rounded-full" />
                             <div>
-                                <p className="font-semibold text-sm text-slate-200 flex items-center gap-1.5">{postToShare.author.name} {postToShare.author.verified && <ShieldCheck size={14} className="text-cyan-400" />}</p>
-                                <p className="text-xs text-slate-500">{new Date(postToShare.timestamp).toLocaleString()}</p>
+                                <p className="font-semibold text-sm text-text-primary flex items-center gap-1.5">{postToShare.author.name} {postToShare.author.verified && <ShieldCheck size={14} className="text-brand-cyan" />}</p>
+                                <p className="text-xs text-text-muted">{new Date(postToShare.timestamp).toLocaleString()}</p>
                             </div>
                         </div>
-                        <div className="mt-2 text-sm text-slate-400 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                        <div className="mt-2 text-sm text-text-secondary whitespace-pre-wrap max-h-40 overflow-y-auto">
                             <TranslatedText contentId={`${postToShare.id}_quote_preview`} content={postToShare.content} as="span" />
                         </div>
                     </div>
                 </div>
-                <div className="p-4 bg-slate-900/50 border-t border-slate-800 flex justify-end">
-                    <button onClick={handleSubmit} className="px-6 py-2 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-700">Share</button>
+                <div className="p-4 bg-surface-modal/50 border-t border-border-subtle flex justify-end">
+                    <button onClick={handleSubmit} className="px-6 py-2 bg-brand-cyan text-text-inverted font-semibold rounded-lg hover:bg-cyan-700">Share</button>
                 </div>
             </div>
         </div>
     );
 };
 
+const AppCore: React.FC = () => {
+  const { locale, isLoading, setLocale } = useTranslation();
+  
+  // Dynamically set page direction and font
+  useEffect(() => {
+    document.documentElement.lang = locale.code;
+    document.documentElement.dir = locale.rtl ? 'rtl' : 'ltr';
+    document.body.style.fontFamily = `'${locale.font}', sans-serif`;
 
-const AppContent: React.FC = () => {
+    const fontId = `font-${locale.font.replace(/\s+/g, '-')}`;
+    if (!document.getElementById(fontId)) {
+      const fontLink = document.createElement('link');
+      fontLink.id = fontId;
+      fontLink.rel = 'stylesheet';
+      fontLink.href = `https://fonts.googleapis.com/css2?family=${locale.font.replace(/\s+/g, '+')}:wght@400;600;700&display=swap`;
+      document.head.appendChild(fontLink);
+    }
+  }, [locale]);
+  
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(MOCK_ELITE_USER);
@@ -205,8 +231,42 @@ const AppContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [webSearchResults, setWebSearchResults] = useState<WebSearchResults | null>(null);
-  const [searchMode, setSearchMode] = useState<'evolve' | 'web'>('evolve');
-  
+  const [searchMode, setSearchMode] = useState<'evolve' | 'web'>('web');
+
+  // Governance state
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+
+  const addAuditLog = useCallback((event: string, details: Record<string, any>) => {
+    if (!userProfile) return;
+    const newLog: AuditLog = {
+      id: `log-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actor: userProfile.fullName,
+      event,
+      details,
+    };
+    setAuditLogs(prev => [newLog, ...prev]);
+  }, [userProfile]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const initializeLocale = async () => {
+        // When the user logs in, we establish the correct locale.
+        // The localeManager already loads from localStorage by default.
+        // We only need to set the locale from the user's profile IF
+        // no locale has been previously stored.
+        const storedLocaleJSON = localStorage.getItem('evolve-locale-v2');
+        if (!storedLocaleJSON && userProfile?.locale) {
+            if (isMounted) {
+                await setLocale(userProfile.locale.id);
+            }
+        }
+    };
+    initializeLocale();
+    return () => { isMounted = false; }
+  }, [userProfile, setLocale]);
+
+
   // Robust theme state initialization
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const storedTheme = localStorage.getItem('evolve-theme');
@@ -215,6 +275,17 @@ const AppContent: React.FC = () => {
     }
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
+  
+  // Check for Veo API key on mount
+  useEffect(() => {
+    if (userProfile && (window as any).aistudio?.hasSelectedApiKey) {
+        (window as any).aistudio.hasSelectedApiKey().then((hasKey: boolean) => {
+            if (userProfile.hasVeoApiKey !== hasKey) {
+                setUserProfile(prev => prev ? { ...prev, hasVeoApiKey: hasKey } : null);
+            }
+        });
+    }
+  }, [userProfile]);
 
   useEffect(() => {
     const storedHistory = localStorage.getItem('evolve-search-history');
@@ -236,7 +307,7 @@ const AppContent: React.FC = () => {
     }
     localStorage.setItem('evolve-theme', theme);
   }, [theme]);
-
+  
   const handleToggleTheme = () => {
     setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
   };
@@ -274,10 +345,23 @@ const AppContent: React.FC = () => {
       verifiedStatus: 'Verified',
       trustScore: 98,
       activity: [],
+      selectedImageModel: 'imagen',
+      selectedVideoModel: 'gemini-storyboard',
+      hasVeoApiKey: false,
     };
     setUserProfile(profile);
     setNeedsOnboarding(false);
     setIsAuthenticated(true);
+
+    if (data.termsAccepted) {
+      localStorage.setItem('evolve-terms-accepted:2025-10-30', 'true');
+    }
+    if (data.privacyAccepted) {
+        localStorage.setItem('evolve-privacy-accepted:2025-10-30', 'true');
+    }
+    if (data.governanceAccepted) {
+        localStorage.setItem('evolve-governance-accepted:2025-10-30', 'true');
+    }
   };
 
   const handleEnableBiometrics = () => {
@@ -365,10 +449,10 @@ const AppContent: React.FC = () => {
       setCurrentView('feed');
   };
   
-  const handleAddPost = (postData: { contentText: string; type: PostType; isSponsored?: boolean; mediaFiles: File[]; scheduledTime?: string; tags: string[]; }) => {
+  const handleAddPost = (postData: { contentText: string; type: PostType; isSponsored?: boolean; mediaFiles: File[]; scheduledTime?: string; tags: string[]; id?: string; }) => {
     if (!userProfile) return;
     const newPost: Post = {
-        id: `post-${Date.now()}`,
+        id: postData.id || `post-${Date.now()}`,
         author: { id: userProfile.ssoEmail, name: userProfile.fullName, title: userProfile.jobTitle, company: userProfile.company, verified: userProfile.verifiedStatus === 'Verified' },
         timestamp: new Date().toISOString(),
         analytics: { allReactions: [], comments: 0, impressions: 0, views: 0, shares: 0, profileViews: 0, newConnections: 0 },
@@ -434,8 +518,8 @@ const AppContent: React.FC = () => {
   
   const handleEndLiveStream = (postId: string) => {
     setFeedItems(prev => prev.map(item => {
-        if ('content' in item && item.id === postId) {
-            return { ...item, isLive: false }; // Mark as ended, but don't change type yet
+        if ('content' in item && item.id === postId && item.type === 'live') {
+            return { ...item, isLive: false };
         }
         return item;
     }));
@@ -682,13 +766,17 @@ const AppContent: React.FC = () => {
 
 
   if (!isAuthenticated && !needsOnboarding) {
-    return <LandingPage onSelectPlan={handleSelectPlan} isBiometricEnrolled={isBiometricEnrolled} onBiometricLogin={handleBiometricLogin} />;
+    return <LandingPage onSelectPlan={handleSelectPlan} isBiometricEnrolled={isBiometricEnrolled} onBiometricLogin={handleBiometricLogin} onNavigate={setCurrentView} />;
   }
 
+
   return (
-    <LocaleProvider>
-      <TranslatorProvider>
-        <div className="min-h-screen text-slate-800 dark:text-slate-200">
+        <div className={`min-h-screen text-text-primary ${isLoading ? 'opacity-50 transition-opacity' : ''}`}>
+          {/* ARIA Live Region for screen readers */}
+          <div aria-live="polite" aria-atomic="true" className="sr-only">
+            {`Language changed to ${locale.name}`}
+          </div>
+
           {isAuthenticated && userProfile && (
             <>
             <Header
@@ -740,6 +828,7 @@ const AppContent: React.FC = () => {
                     setUserProfile={setUserProfile}
                     initialTab={initialProfileTab}
                     isCurrentUser={!viewedProfile}
+                    addAuditLog={addAuditLog}
                 />
                  <MessagingModal
                     isOpen={isMessagingOpen}
@@ -762,6 +851,7 @@ const AppContent: React.FC = () => {
                     onClose={() => setIsLiveStreamModalOpen(false)} 
                     userProfile={userProfile}
                     onAddPost={handleAddPost}
+                    onEndLiveStream={handleEndLiveStream}
                 />
                 <ScheduleLiveModal
                     isOpen={isScheduleLiveModalOpen}
@@ -828,10 +918,12 @@ const AppContent: React.FC = () => {
                 onViewListing={(listing) => setSelectedListingForDetail(listing)}
               />
             )}
-             {currentView === 'compliance' && userProfile && (
-              <ComplianceDashboard 
+             {currentView === 'governanceHub' && userProfile && (
+              <GovernanceHubPage 
+                userProfile={userProfile}
                 listings={marketplaceListings} 
                 onUpdateStatus={handleUpdateListingStatus}
+                auditLogs={auditLogs}
               />
             )}
             {currentView === 'feed' && userProfile && (
@@ -840,15 +932,16 @@ const AppContent: React.FC = () => {
                     feedItems={feedItems}
                     onAddPost={handleAddPost}
                     onLikePost={handleLikePost}
-// Fix: The prop onAddComment was assigned to an undefined variable. Corrected to use the handleAddComment function.
+                    // Fix: Pass handleAddComment to the onAddComment prop
                     onAddComment={handleAddComment}
+                    // Fix: Pass handleLikeComment to the onLikeComment prop
                     onLikeComment={handleLikeComment}
                     onOpenLiveStream={() => setIsLiveStreamModalOpen(true)}
                     onOpenScheduleLive={() => setIsScheduleLiveModalOpen(true)}
                     onEndLiveStream={handleEndLiveStream}
                     onArchiveLiveStream={handleArchiveLiveStream}
                     onStartScheduledStream={() => {}} // Placeholder
-// Fix: The prop onUpdatePost was assigned to an undefined variable. Corrected to use the handleUpdatePost function.
+                    // Fix: Pass handleUpdatePost to the onUpdatePost prop
                     onUpdatePost={handleUpdatePost}
                     onRepost={() => {}} // Placeholder
                     onQuotePost={(post) => setSharePostTarget(post)}
@@ -861,6 +954,7 @@ const AppContent: React.FC = () => {
             {currentView === 'network' && userProfile && (
                  <MyNetwork
                     networkUsers={networkUsers}
+                    // Fix: Cannot find name 'currentUser'. Changed to 'userProfile'.
                     currentUser={userProfile}
                     onViewProfile={(userId) => {
                         const user = MOCK_NETWORK_USERS.find(u => u.id === userId);
@@ -871,17 +965,35 @@ const AppContent: React.FC = () => {
                     onMessage={(user) => handleStartConversation({id: user.id, name: user.name, title: user.title})}
                 />
             )}
+             {currentView === 'connectors' && userProfile && (
+                <ConnectorsPage />
+            )}
             {currentView === 'search' && (
                 <SearchResultsComponent
                     query={searchQuery}
                     results={webSearchResults}
                 />
             )}
+            {currentView === 'terms' && (
+                <TermsOfUsePage />
+            )}
+             {currentView === 'privacy' && (
+                <PrivacyPolicyPage />
+            )}
           </main>
         </div>
+  );
+};
+
+
+const AppContent: React.FC = () => {
+  return (
+    <LocaleProvider>
+      <TranslatorProvider>
+        <AppCore />
       </TranslatorProvider>
     </LocaleProvider>
   );
-};
+}
 
 export default AppContent;

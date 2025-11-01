@@ -10,16 +10,16 @@ interface SearchResultsProps {
 }
 
 const PostResultCard: React.FC<{ item: Post }> = ({ item }) => (
-    <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 h-full flex flex-col">
+    <div className="bg-surface-elevated p-4 rounded-lg border border-border-subtle h-full flex flex-col">
         <div className="flex items-center gap-2 mb-2">
-            <User className="h-6 w-6 p-1 bg-slate-700 rounded-full text-slate-300" />
+            <User className="h-6 w-6 p-1 bg-surface-input rounded-full text-text-secondary" />
             <div>
-                <p className="font-semibold text-sm text-slate-200">{item.author.name}</p>
-                <p className="text-xs text-slate-500">{new Date(item.timestamp).toLocaleDateString()}</p>
+                <p className="font-semibold text-sm text-text-primary">{item.author.name}</p>
+                <p className="text-xs text-text-muted">{new Date(item.timestamp).toLocaleDateString()}</p>
             </div>
         </div>
-        <p className="text-slate-300 text-sm line-clamp-3 flex-grow">{item.content.originalText}</p>
-        <div className="flex items-center gap-4 text-xs text-slate-500 mt-3 pt-3 border-t border-slate-700">
+        <p className="text-text-secondary text-sm line-clamp-3 flex-grow">{item.content.originalText}</p>
+        <div className="flex items-center gap-4 text-xs text-text-muted mt-3 pt-3 border-t border-border-subtle">
             <div className="flex items-center gap-1"><ThumbsUp size={12} /> {item.analytics.allReactions.length}</div>
             <div className="flex items-center gap-1"><MessageSquare size={12} /> {item.analytics.comments}</div>
         </div>
@@ -27,12 +27,12 @@ const PostResultCard: React.FC<{ item: Post }> = ({ item }) => (
 );
 
 const PersonResultCard: React.FC<{ item: NetworkUser }> = ({ item }) => (
-    <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 flex items-center gap-4">
+    <div className="bg-surface-elevated p-4 rounded-lg border border-border-subtle flex items-center gap-4">
         <img src={item.profileImageUrl} alt={item.fullName} className="w-16 h-16 rounded-full object-cover" />
         <div>
-            <p className="font-bold text-white">{item.fullName}</p>
-            <p className="text-sm text-cyan-400">{item.jobTitle}</p>
-            <p className="text-sm text-slate-400">{item.company}</p>
+            <p className="font-bold text-text-primary">{item.fullName}</p>
+            <p className="text-sm text-link">{item.jobTitle}</p>
+            <p className="text-sm text-text-secondary">{item.company}</p>
         </div>
     </div>
 );
@@ -41,15 +41,15 @@ const MarketplaceResultCard: React.FC<{ item: MarketplaceListing }> = ({ item })
     const { formatCurrency } = useCurrency();
     
     return (
-        <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 h-full flex flex-col">
+        <div className="bg-surface-elevated p-4 rounded-lg border border-border-subtle h-full flex flex-col">
             <div className="flex items-center gap-2 mb-2">
-                <Store className="h-5 w-5 text-cyan-400 flex-shrink-0" />
-                <p className="font-semibold text-sm text-slate-200 truncate">{item.title.originalText}</p>
+                <Store className="h-5 w-5 text-link flex-shrink-0" />
+                <p className="font-semibold text-sm text-text-primary truncate">{item.title.originalText}</p>
             </div>
-            <p className="text-slate-400 text-sm line-clamp-2 flex-grow">{item.summary.originalText}</p>
-            <div className="flex items-center justify-between text-xs text-slate-500 mt-3 pt-3 border-t border-slate-700">
+            <p className="text-text-secondary text-sm line-clamp-2 flex-grow">{item.summary.originalText}</p>
+            <div className="flex items-center justify-between text-xs text-text-muted mt-3 pt-3 border-t border-border-subtle">
                 <div className="flex items-center gap-1 truncate"><MapPin size={12} /> {item.location}</div>
-                {item.amount > 0 && <div className="flex items-center gap-1 font-semibold text-cyan-400"><DollarSign size={12} /> {formatCurrency(item.amount)}</div>}
+                {item.amount > 0 && <div className="flex items-center gap-1 font-semibold text-link"><DollarSign size={12} /> {formatCurrency(item.amount)}</div>}
             </div>
         </div>
     );
@@ -67,13 +67,13 @@ const SourceItem: React.FC<{ source: { web: { uri: string; title: string; }} }> 
 
     return (
         <li className="relative">
-            <a href={source.web.uri} target="_blank" rel="noopener noreferrer" className="block p-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors group">
-                <p className="font-semibold text-cyan-400 truncate pr-8">{source.web.title || 'Untitled'}</p>
-                <p className="text-xs text-slate-500 truncate">{source.web.uri}</p>
+            <a href={source.web.uri} target="_blank" rel="noopener noreferrer" className="block p-3 bg-surface-elevated rounded-lg hover:bg-surface-input transition-colors group">
+                <p className="font-semibold text-link truncate pr-8">{source.web.title || 'Untitled'}</p>
+                <p className="text-xs text-text-muted truncate">{source.web.uri}</p>
             </a>
             <button
                 onClick={handleCopy}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 bg-slate-700/50 rounded-md hover:bg-slate-600 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-text-secondary bg-surface-input/50 rounded-md hover:bg-surface-card hover:text-text-primary opacity-0 group-hover:opacity-100 transition-opacity"
                 title="Copy link"
             >
                 {copied ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
@@ -85,11 +85,11 @@ const SourceItem: React.FC<{ source: { web: { uri: string; title: string; }} }> 
 const MapSourceItem: React.FC<{ source: { maps: { uri: string; title: string; }} }> = ({ source }) => {
     return (
       <li>
-        <a href={source.maps.uri} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors group">
+        <a href={source.maps.uri} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-surface-elevated rounded-lg hover:bg-surface-input transition-colors group">
           <MapPin size={20} className="text-red-400 flex-shrink-0" />
           <div className="flex-grow">
-            <p className="font-semibold text-cyan-400 truncate">{source.maps.title || 'Untitled Location'}</p>
-            <p className="text-xs text-slate-500 truncate">{source.maps.uri}</p>
+            <p className="font-semibold text-link truncate">{source.maps.title || 'Untitled Location'}</p>
+            <p className="text-xs text-text-muted truncate">{source.maps.uri}</p>
           </div>
         </a>
       </li>
@@ -138,10 +138,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ query, results }) 
     if (!results) {
         return (
             <main className="container mx-auto max-w-4xl p-4 md:p-6 space-y-8">
-                <h1 className="text-2xl font-bold text-white">
-                    Searching for "<span className="text-cyan-400">{query}</span>"
+                <h1 className="text-2xl font-bold text-text-primary">
+                    Searching for "<span className="text-link">{query}</span>"
                 </h1>
-                <div className="text-center py-16 text-slate-400">
+                <div className="text-center py-16 text-text-secondary">
                     <Loader className="h-12 w-12 animate-spin mx-auto mb-4" />
                     <p>Searching EVOLVE and the web with Gemini...</p>
                 </div>
@@ -154,27 +154,27 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ query, results }) 
 
     return (
         <main className="container mx-auto max-w-4xl p-4 md:p-6 space-y-8">
-            <h1 className="text-2xl font-bold text-white">
-                Results for "<span className="text-cyan-400">{query}</span>"
+            <h1 className="text-2xl font-bold text-text-primary">
+                Results for "<span className="text-link">{query}</span>"
             </h1>
 
             {isWebSearch || hasCategorizedResults ? (
                 <div className="space-y-8">
                     {/* AI Summary Section */}
                     {isWebSearch && (
-                        <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
-                            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2"><Bot /> AI Web Summary</h2>
+                        <div className="bg-surface-card p-6 rounded-2xl border border-border-subtle">
+                            <h2 className="text-xl font-bold text-text-primary mb-4 flex items-center gap-2"><Bot /> AI Web Summary</h2>
                             {results.imageUrl && (
-                                <img src={results.imageUrl} alt={`AI generated image for "${query}"`} className="w-full h-64 object-cover rounded-lg mb-4 border border-slate-700" />
+                                <img src={results.imageUrl} alt={`AI generated image for "${query}"`} className="w-full h-64 object-cover rounded-lg mb-4 border border-border-subtle" />
                             )}
-                            <p className="text-slate-300 whitespace-pre-wrap">{results.summary.replace(/\*/g, '')}</p>
+                            <p className="text-text-primary whitespace-pre-wrap">{results.summary.replace(/\*/g, '')}</p>
                         </div>
                     )}
 
                     {/* Sources Section */}
                     {isWebSearch && results.sources && results.sources.length > 0 && (
-                        <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
-                            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2"><Link /> Sources</h2>
+                        <div className="bg-surface-card p-6 rounded-2xl border border-border-subtle">
+                            <h2 className="text-xl font-bold text-text-primary mb-4 flex items-center gap-2"><Link /> Sources</h2>
                             <ul className="space-y-2">
                                 {results.sources.map((source, index) => {
                                     if(source.web) {
@@ -192,7 +192,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ query, results }) 
                     {/* Categorized Results Section */}
                     {hasCategorizedResults && (
                         <div className="space-y-6">
-                            <div className="border-b border-slate-700">
+                            <div className="border-b border-border-subtle">
                                 <nav className="-mb-px flex space-x-6 overflow-x-auto pb-2">
                                     {SEARCH_CATEGORIES.map(category => {
                                         const count = category === 'All' ? totalCount : (results.categorized?.[category] || []).length;
@@ -201,9 +201,9 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ query, results }) 
                                             <button 
                                                 key={category} 
                                                 onClick={() => handleFilterClick(category)}
-                                                className={`flex-shrink-0 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors ${activeFilters.includes(category) ? 'border-cyan-500 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                                                className={`flex-shrink-0 whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm transition-colors ${activeFilters.includes(category) ? 'border-link text-link' : 'border-transparent text-text-secondary hover:text-text-primary'}`}
                                             >
-                                                {category} <span className="ml-1.5 bg-slate-700 text-slate-300 text-xs font-bold py-0.5 px-2 rounded-full">{count}</span>
+                                                {category} <span className={`ml-1.5 text-xs font-bold py-0.5 px-2 rounded-full ${activeFilters.includes(category) ? 'bg-gradient-to-r from-brand-violet to-brand-cyan text-white' : 'bg-surface-input text-text-secondary'}`}>{count}</span>
                                             </button>
                                         )
                                         }
@@ -217,11 +217,11 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ query, results }) 
                                 if (!Array.isArray(items) || items.length === 0) return null;
                                 const itemsToShow = activeFilters.includes('All') ? items.slice(0, 5) : items;
                                 return (
-                                    <div key={category} className="bg-slate-900/50 p-6 rounded-2xl border border-slate-700">
+                                    <div key={category} className="bg-surface-card p-6 rounded-2xl border border-border-subtle">
                                         <div className="flex justify-between items-center mb-4">
-                                            <h2 className="text-xl font-bold text-white">{category}</h2>
+                                            <h2 className="text-xl font-bold text-text-primary">{category}</h2>
                                             {activeFilters.includes('All') && items.length > 5 && (
-                                                <button onClick={() => setActiveFilters([category])} className="text-sm text-cyan-400 hover:underline flex items-center gap-1">
+                                                <button onClick={() => setActiveFilters([category])} className="text-sm text-link hover:underline flex items-center gap-1">
                                                     View All ({items.length}) <ArrowRight size={14} />
                                                 </button>
                                             )}
@@ -242,7 +242,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ query, results }) 
                     )}
                 </div>
             ) : (
-                <div className="text-center py-16 text-slate-400">
+                <div className="text-center py-16 text-text-secondary">
                     <p>No results found for "{query}". Try a different search.</p>
                 </div>
             )}

@@ -143,9 +143,9 @@ export const ListingDetailModal: React.FC<ListingDetailModalProps> = ({ listing,
             />
             <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" aria-modal="true" role="dialog">
                 <div 
-                    className={`bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-4xl transform transition-all duration-300 ease-out ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}
+                    className={`bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col transform transition-all duration-300 ease-out ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}
                 >
-                    <div className="relative h-96 rounded-t-2xl overflow-hidden bg-black flex items-center justify-center">
+                    <div className="relative h-48 sm:h-64 md:h-96 rounded-t-2xl overflow-hidden bg-black flex items-center justify-center flex-shrink-0">
                         {selectedMedia?.type === 'image' && (
                             <img src={selectedMedia.url} alt={listing.title.originalText} className="w-full h-full object-contain" />
                         )}
@@ -192,7 +192,7 @@ export const ListingDetailModal: React.FC<ListingDetailModalProps> = ({ listing,
                         </button>
                     </div>
                     
-                    <div className="max-h-[40vh] overflow-y-auto p-6">
+                    <div className="flex-grow overflow-y-auto p-6">
                         {analysis ? (
                              <div className="animate-fade-in">
                                 <button onClick={() => setAnalysis(null)} className="flex items-center gap-2 text-sm text-cyan-400 hover:underline mb-4">
@@ -236,7 +236,7 @@ export const ListingDetailModal: React.FC<ListingDetailModalProps> = ({ listing,
                         )}
                     </div>
 
-                    <div className="p-4 bg-slate-900/50 border-t border-slate-800 flex justify-between items-center">
+                    <div className="p-4 bg-slate-900/50 border-t border-slate-800 flex justify-between items-center flex-shrink-0">
                         {!analysis && (
                             <button 
                                 onClick={handleAnalyze}

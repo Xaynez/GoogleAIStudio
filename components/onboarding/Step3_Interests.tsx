@@ -31,11 +31,11 @@ export const Step3Interests: React.FC<Step3Props> = ({ data, updateData }) => {
                         onClick={() => handleToggleInterest(category)}
                         className={`p-6 rounded-lg border-2 text-center transition-all duration-200 transform hover:scale-105 ${
                             data.interests.includes(category)
-                                ? 'bg-cyan-500/20 border-cyan-500'
+                                ? 'bg-gradient-to-r from-brand-violet to-brand-cyan border-transparent'
                                 : 'bg-slate-800 border-slate-700 hover:border-slate-500'
                         }`}
                     >
-                         <p className={`font-semibold ${data.interests.includes(category) ? 'text-cyan-300' : 'text-slate-200'}`}>{category}</p>
+                         <p className={`font-semibold ${data.interests.includes(category) ? 'text-white' : 'text-slate-200'}`}>{category}</p>
                     </button>
                 ))}
             </div>

@@ -101,8 +101,13 @@ export const LiveAssistant: React.FC = () => {
 
                         scriptProcessor.onaudioprocess = (audioProcessingEvent) => {
                             const inputData = audioProcessingEvent.inputBuffer.getChannelData(0);
+                            const l = inputData.length;
+                            const int16 = new Int16Array(l);
+                            for (let i = 0; i < l; i++) {
+                                int16[i] = inputData[i] * 32768;
+                            }
                             const pcmBlob: GenAiBlob = {
-                                data: encode(new Uint8Array(new Int16Array(inputData.map(x => x * 32767)).buffer)),
+                                data: encode(new Uint8Array(int16.buffer)),
                                 mimeType: 'audio/pcm;rate=16000',
                             };
                             sessionPromiseRef.current?.then((session) => {
@@ -236,7 +241,7 @@ export const LiveAssistant: React.FC = () => {
                     <Bot className="h-6 w-6 text-cyan-400" />
                     <h3 className="text-lg font-bold text-white">Live Assistant</h3>
                 </div>
-                <button onClick={handleToggleOpen} title="Close Live Assistant" className="text-slate-400 hover:text-white transition-colors">
+                <button onClick={handleToggleOpen} title="Close Live Assistant" aria-label="Close Live Assistant" className="text-slate-400 hover:text-white transition-colors">
                     <X className="h-5 w-5" />
                 </button>
             </header>
@@ -255,6 +260,7 @@ export const LiveAssistant: React.FC = () => {
                 <button 
                     onClick={status === 'idle' || status === 'error' ? startSession : stopSession} 
                     title={status === 'idle' || status === 'error' ? 'Start session' : 'Stop session'}
+                    aria-label={status === 'idle' || status === 'error' ? 'Start voice session' : 'Stop voice session'}
                     className={`p-5 rounded-full transition-colors text-white ${status === 'listening' || status === 'speaking' ? 'bg-red-600 hover:bg-red-700 animate-pulse' : 'bg-cyan-600 hover:bg-cyan-700'}`}
                 >
                     {status === 'idle' || status === 'error' ? <Mic className="h-8 w-8" /> : <Power className="h-8 w-8" />}

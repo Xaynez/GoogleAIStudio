@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import type { OnboardingData } from '../../types';
 import { StepIndicator } from './StepIndicator';
 import { Step1Verification } from './Step1_Verification';
+import { Step2_Legal } from './Step2_Legal';
 import { Step2Profile } from './Step2_Profile';
 import { Step3Interests } from './Step3_Interests';
 import { Step4Biometrics } from './Step4_Biometrics';
@@ -17,7 +18,7 @@ interface OnboardingWizardProps {
   onEnableBiometrics: () => void;
 }
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onClose, onComplete, onEnableBiometrics }) => {
   const { t, locale } = useTranslation();
@@ -38,7 +39,9 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onCl
     languages: [],
     industries: [],
     interests: [],
-    complianceAgreed: false,
+    termsAccepted: false,
+    privacyAccepted: false,
+    governanceAccepted: false,
   });
   const [isClosing, setIsClosing] = useState(false);
 
@@ -84,17 +87,18 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onCl
                 || !data.idFrontPhoto
                 || (needsBackPhoto && !data.idBackPhoto)
                 || !data.selfieVerified
-                || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.ssoEmail)
-                || !data.complianceAgreed;
+                || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.ssoEmail);
         case 2:
+            return !data.termsAccepted || !data.privacyAccepted || !data.governanceAccepted;
+        case 3:
             const isEducationInvalid = data.education.length === 0 || 
                 data.education.some(edu => !edu.institutionName || !edu.degreeType || !edu.fieldOfStudy);
             const isExperienceInvalid = data.experience.length === 0 ||
                 data.experience.some(exp => !exp.role || !exp.company);
             return !data.jobTitle || !data.summary.originalText || !data.company || !data.location || isEducationInvalid || isExperienceInvalid || data.languages.length === 0 || data.industries.length === 0;
-        case 3:
-            return data.interests.length === 0;
         case 4:
+            return data.interests.length === 0;
+        case 5:
             return false; // Biometrics step is optional
         default:
             return false;
@@ -119,10 +123,11 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ isOpen, onCl
 
         <div className="flex-grow p-6 overflow-y-auto">
             {currentStep === 1 && <Step1Verification data={data} updateData={updateData} />}
-            {currentStep === 2 && <Step2Profile data={data} updateData={updateData} />}
-            {currentStep === 3 && <Step3Interests data={data} updateData={updateData} />}
-            {currentStep === 4 && <Step4Biometrics onEnable={onEnableBiometrics} onComplete={nextStep} />}
-            {currentStep === 5 && <Step5Complete name={data.fullName} />}
+            {currentStep === 2 && <Step2_Legal data={data} updateData={updateData} />}
+            {currentStep === 3 && <Step2Profile data={data} updateData={updateData} />}
+            {currentStep === 4 && <Step3Interests data={data} updateData={updateData} />}
+            {currentStep === 5 && <Step4Biometrics onEnable={onEnableBiometrics} onComplete={nextStep} />}
+            {currentStep === 6 && <Step5Complete name={data.fullName} />}
         </div>
         
         <div className="p-6 bg-slate-900/50 border-t border-slate-800 flex justify-between items-center flex-shrink-0">

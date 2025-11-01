@@ -16,7 +16,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, onSelect }) =
     return (
         <div 
             onClick={() => onSelect(listing)}
-            className="bg-slate-900/70 backdrop-blur-sm rounded-2xl shadow-lg border border-slate-800 overflow-hidden transition-all duration-300 ease-in-out hover:border-cyan-500/50 hover:-translate-y-1 hover:shadow-cyan-500/10 cursor-pointer flex flex-col"
+            className="bg-surface-card/70 backdrop-blur-sm rounded-2xl shadow-soft border border-border-subtle overflow-hidden transition-all duration-300 ease-in-out hover:border-brand-cyan/50 hover:-translate-y-1 hover:shadow-cyan-500/10 cursor-pointer flex flex-col"
         >
             <div className="relative">
                 <img src={displayImage} alt={listing.title.originalText} className="w-full h-40 object-cover" />
@@ -27,15 +27,15 @@ export const ListingCard: React.FC<ListingCardProps> = ({ listing, onSelect }) =
                 )}
             </div>
             <div className="p-4 flex flex-col flex-grow">
-                <h3 className="text-lg font-bold text-white flex-grow">{listing.title.originalText}</h3>
-                <p className="text-sm text-slate-400 mt-2">{listing.summary.originalText}</p>
-                <div className="mt-4 pt-4 border-t border-slate-700 flex justify-between items-center text-sm">
-                    <div className="flex items-center gap-1.5 text-slate-400">
+                <h3 className="text-lg font-bold text-text-primary flex-grow">{listing.title.originalText}</h3>
+                <p className="text-sm text-text-secondary mt-2">{listing.summary.originalText}</p>
+                <div className="mt-4 pt-4 border-t border-border-subtle flex justify-between items-center text-sm">
+                    <div className="flex items-center gap-1.5 text-text-secondary">
                         <MapPin size={14} />
                         <span>{listing.location}</span>
                     </div>
                     {listing.amount > 0 && (
-                        <div className="flex items-center gap-1.5 text-cyan-400 font-semibold">
+                        <div className="flex items-center gap-1.5 text-link font-semibold">
                             <DollarSign size={14} />
                             <span>{formatCurrency(listing.amount)}</span>
                         </div>

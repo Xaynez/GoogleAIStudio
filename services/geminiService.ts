@@ -1,7 +1,5 @@
-
-
 import { GoogleGenAI, Type, GenerateContentResponse, Modality } from "@google/genai";
-import type { ListingAnalysis, UserProfile, PostType, Message, FeedItem, TranslatableContent, Translation, TranscriptionSettings, TranscriptionResult } from '../types';
+import type { ListingAnalysis, UserProfile, PostType, Message, FeedItem, TranslatableContent, Translation, TranscriptionSettings, TranscriptionResult, BusinessPlanData, BusinessPlanOutput, PitchDeckOutput, FinancialVisualsOutput, ValidationIssue, FinancialAnalysisInsights } from '../types';
 import { CURRENCIES } from '../constants';
 
 const ai = new GoogleGenAI({apiKey: process.env.API_KEY!});
@@ -19,6 +17,39 @@ function encode(bytes: Uint8Array): string {
   }
   return btoa(binary);
 }
+
+/**
+ * Handles errors from the Gemini API, providing more specific user-facing messages.
+ * @param error The error object caught.
+ * @param context A string describing the action that failed (e.g., "analyze listing").
+ * @returns An Error object with a user-friendly message.
+ */
+const handleGeminiError = (error: any, context: string): Error => {
+    console.error(`Error during "${context}":`, error);
+
+    if (error instanceof Error) {
+        const message = error.message.toLowerCase();
+        // Check for specific, common API error messages
+        if (message.includes('api key not valid') || message.includes('api_key_not_valid')) {
+            return new Error('Your API key is not valid. Please check your configuration and ensure it is correct.');
+        }
+        if (message.includes('rate limit exceeded') || message.includes('resource_exhausted')) {
+            return new Error('You have exceeded your API request limit for the moment. Please wait a short while and try again.');
+        }
+        if (message.includes('invalid request') || message.includes('bad request') || message.includes('invalid argument')) {
+            return new Error(`The request sent to the AI model was invalid. This might be due to the content of your input. Context: ${context}.`);
+        }
+        // Specific error for Veo API key issues
+        if (message.includes("requested entity was not found.")) {
+            return new Error("API_KEY_NOT_FOUND");
+        }
+        // For other known error messages, you can add more checks here.
+    }
+    
+    // Generic fallback for network errors or unexpected issues
+    return new Error(`Failed to ${context}. The AI model may be temporarily unavailable or there was a network issue.`);
+};
+
 
 const analysisSchema = {
     type: Type.OBJECT,
@@ -147,8 +178,7 @@ export const analyzeListingWithGemini = async (listingText: string): Promise<Lis
 
         return analysisResult as ListingAnalysis;
     } catch (error) {
-        console.error("Error analyzing listing with Gemini:", error);
-        throw new Error("Failed to analyze the listing. The AI model may be temporarily unavailable.");
+        throw handleGeminiError(error, "analyze the listing");
     }
 };
 
@@ -174,8 +204,7 @@ export const enhanceSummaryWithGemini = async (profileData: Partial<UserProfile>
         });
         return response.text;
     } catch (error) {
-        console.error("Error enhancing summary:", error);
-        throw new Error("Failed to enhance summary.");
+        throw handleGeminiError(error, "enhance summary");
     }
 };
 
@@ -196,8 +225,7 @@ export const translateTextWithGemini = async (text: string, targetLanguage: stri
         });
         return response.text;
     } catch (error) {
-        console.error(`Error translating text to ${targetLanguage}:`, error);
-        throw new Error("Failed to translate text.");
+        throw handleGeminiError(error, `translate text to ${targetLanguage}`);
     }
 };
 
@@ -291,8 +319,7 @@ ${contentItemsJson}
         return mockResponse;
         
     } catch (error) {
-        console.error("Error in translateBatchWithGemini:", error);
-        throw new Error("Failed to translate content batch.");
+        throw handleGeminiError(error, "translate content batch");
     }
 };
 
@@ -319,8 +346,7 @@ export const summarizeMeetingNotesWithGemini = async (notes: string, context: st
         });
         return response.text;
     } catch (error) {
-        console.error("Error summarizing meeting notes:", error);
-        throw new Error("Failed to summarize meeting notes.");
+        throw handleGeminiError(error, "summarize meeting notes");
     }
 };
 
@@ -344,8 +370,7 @@ export const generateSpeechWithGemini = async (textToSpeak: string): Promise<str
         }
         return base64Audio;
     } catch (error) {
-        console.error("Error generating speech:", error);
-        throw new Error("Failed to generate speech.");
+        throw handleGeminiError(error, "generate speech");
     }
 };
 
@@ -366,8 +391,7 @@ export const generateImageWithImagen = async (prompt: string): Promise<string> =
         
         return response.generatedImages[0].image.imageBytes;
     } catch (error) {
-        console.error("Error generating image:", error);
-        throw new Error("Failed to generate image.");
+        throw handleGeminiError(error, "generate image");
     }
 };
 
@@ -390,8 +414,7 @@ export const generateStreetViewImage = async (locationName: string): Promise<str
 
         return response.generatedImages[0].image.imageBytes;
     } catch (error) {
-        console.error("Error generating street view image:", error);
-        throw new Error("Failed to generate street view image.");
+        throw handleGeminiError(error, "generate street view image");
     }
 };
 
@@ -428,8 +451,7 @@ export const editImageWithGemini = async (base64ImageData: string, mimeType: str
 
         return { text: textResponse, imageBase64, imageMimeType };
     } catch (error) {
-        console.error("Error editing image:", error);
-        throw new Error("Failed to edit image.");
+        throw handleGeminiError(error, "edit image");
     }
 };
 
@@ -450,12 +472,7 @@ export const generateVideos = async (params: {
         });
         return operation;
     } catch (error) {
-        console.error("Error generating video:", error);
-        if (error instanceof Error && error.message.includes("Requested entity was not found.")) {
-            // Special error for API key issue
-            throw new Error("API_KEY_NOT_FOUND");
-        }
-        throw new Error("Failed to start video generation.");
+        throw handleGeminiError(error, "start video generation");
     }
 };
 
@@ -466,12 +483,7 @@ export const getVideosOperation = async (params: { operation: any }) => {
         const updatedOperation = await videoAI.operations.getVideosOperation({ operation: params.operation });
         return updatedOperation;
     } catch (error) {
-        console.error("Error getting video operation status:", error);
-        if (error instanceof Error && error.message.includes("Requested entity was not found.")) {
-            // Special error for API key issue
-            throw new Error("API_KEY_NOT_FOUND");
-        }
-        throw new Error("Failed to get video status.");
+        throw handleGeminiError(error, "get video status");
     }
 };
 
@@ -479,7 +491,7 @@ export const searchWebWithGemini = async (query: string): Promise<{ text: string
     const fullPrompt = `Summarize the latest information about "${query}". The summary should be a clean, well-written paragraph. Do not use any markdown like asterisks.`;
     try {
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-2.5-pro",
             contents: fullPrompt,
             config: { tools: [{googleSearch: {}}] },
         });
@@ -488,8 +500,7 @@ export const searchWebWithGemini = async (query: string): Promise<{ text: string
             sources: response.candidates?.[0]?.groundingMetadata?.groundingChunks || [] 
         };
     } catch (error) {
-        console.error("Error with web search:", error);
-        throw new Error("Failed to perform web search.");
+        throw handleGeminiError(error, "perform web search");
     }
 };
 
@@ -497,7 +508,7 @@ export const searchMapsWithGemini = async (query: string, location?: { latitude:
     const fullPrompt = `Find information about "${query}" on Google Maps.`;
     try {
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-2.5-pro",
             contents: fullPrompt,
             config: {
                 tools: [{googleMaps: {}}],
@@ -509,15 +520,14 @@ export const searchMapsWithGemini = async (query: string, location?: { latitude:
             sources: response.candidates?.[0]?.groundingMetadata?.groundingChunks || [] 
         };
     } catch (error) {
-        console.error("Error with maps search:", error);
-        throw new Error("Failed to perform maps search.");
+        throw handleGeminiError(error, "perform maps search");
     }
 };
 
 export const getCoordinatesForLocation = async (locationName: string): Promise<{ lat: number; lng: number } | null> => {
     try {
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-2.5-pro",
             contents: `Provide the approximate latitude and longitude for "${locationName}".`,
             config: {
                 responseMimeType: "application/json",
@@ -537,8 +547,8 @@ export const getCoordinatesForLocation = async (locationName: string): Promise<{
         }
         return null;
     } catch (error) {
-        console.error("Error getting coordinates:", error);
-        return null;
+        // This will now throw a more specific error, which will be caught by the caller
+        throw handleGeminiError(error, "get coordinates for location");
     }
 };
 
@@ -563,8 +573,7 @@ export const rewriteTextWithGemini = async (text: string, tone: 'Formal' | 'Casu
         });
         return response.text;
     } catch (error) {
-        console.error(`Error rewriting text with ${tone} tone:`, error);
-        throw new Error("Failed to rewrite text.");
+        throw handleGeminiError(error, `rewrite text with ${tone} tone`);
     }
 };
 
@@ -596,8 +605,7 @@ export const suggestPostIdeasWithGemini = async (userProfile: UserProfile): Prom
         const jsonText = response.text;
         return JSON.parse(jsonText);
     } catch (error) {
-        console.error("Error suggesting post ideas:", error);
-        throw new Error("Failed to suggest post ideas.");
+        throw handleGeminiError(error, "suggest post ideas");
     }
 };
 
@@ -646,8 +654,7 @@ export const generatePostContentWithGemini = async (
         }
         return result;
     } catch (error) {
-        console.error("Error generating post content:", error);
-        throw new Error("Failed to generate post content.");
+        throw handleGeminiError(error, "generate post content");
     }
 };
 
@@ -669,8 +676,7 @@ export const summarizeConversationWithGemini = async (messages: Message[], targe
         });
         return response.text;
     } catch (error) {
-        console.error("Error summarizing conversation:", error);
-        throw new Error("Failed to summarize conversation.");
+        throw handleGeminiError(error, "summarize conversation");
     }
 };
 
@@ -699,9 +705,8 @@ export const cleanupTranscriptionWithGemini = async (rawText: string): Promise<s
         });
         return response.text.trim();
     } catch (error) {
-        console.error("Error cleaning up transcription:", error);
-        // Fallback to raw text if AI cleanup fails
-        return rawText;
+        // The caller of this function has a fallback mechanism.
+        throw handleGeminiError(error, "clean up transcription");
     }
 };
 
@@ -802,8 +807,7 @@ export const transcribeAudioWithGemini = async (audioBlob: Blob, settings: Trans
         };
 
     } catch (error) {
-        console.error("Error transcribing audio:", error);
-        throw new Error("Failed to process and transcribe audio.");
+        throw handleGeminiError(error, "process and transcribe audio");
     }
 };
 
@@ -883,4 +887,171 @@ export const rankFeedItems = async (items: FeedItem[], userProfile: UserProfile)
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     return sortedItems;
+};
+
+// --- MOCK BUSINESS SUITE FUNCTIONS ---
+
+export const generateBusinessPlanWithGemini = async (data: BusinessPlanData): Promise<BusinessPlanOutput> => {
+    console.log("Generating Business Plan with data:", data);
+    await new Promise(resolve => setTimeout(resolve, 4000)); // Simulate API call
+    return {
+        executiveSummary: `Based on the provided details for ${data.companyName}, a company in the ${data.industry} sector, this business plan outlines a strategic path to success. The company's mission is "${data.mission}" with a long-term vision to "${data.vision}". The core offering revolves around ${data.productDetails.substring(0, 80)}... This generated plan provides a foundational structure for investor discussions and strategic planning.`,
+        sections: [
+            "Executive Summary",
+            "Problem and Solution",
+            "Market Opportunity",
+            "Competitive Landscape",
+            "Business Model",
+            "Marketing & Sales Strategy",
+            "Operations Plan",
+            "Management Team",
+            "Financial Projections",
+            "Conclusion & Ask",
+        ]
+    };
+};
+
+export const generatePitchDeckWithGemini = async (data: BusinessPlanData): Promise<PitchDeckOutput> => {
+    console.log("Generating Pitch Deck with data:", data);
+    await new Promise(resolve => setTimeout(resolve, 4000));
+    return {
+        slides: [
+            { title: 'Title Slide', content: `${data.companyName}\n${data.mission}` },
+            { title: 'The Problem', content: '• A summary of the key market problem will be generated here.\n• Based on your product details.' },
+            { title: 'Our Solution', content: `• Introducing: ${data.productDetails.substring(0, 50)}...\n• Key features and value proposition.` },
+            { title: 'Market Opportunity', content: '• TAM, SAM, SOM analysis for the ' + data.industry + ' sector.\n• Growth projections.' },
+            { title: 'Business Model', content: '• How we make money.\n• Pricing strategy and revenue streams.' },
+            { title: 'Financials', content: '• Key financial projections (if data was provided).\n• Revenue, Profit, CAC, LTV.' },
+        ]
+    };
+};
+
+export const validateAndAnalyzeFinancialsWithGemini = async (file: File): Promise<{ issues: ValidationIssue[], insights: FinancialAnalysisInsights }> => {
+    console.log("Validating and analyzing file:", file.name);
+    await new Promise(resolve => setTimeout(resolve, 2500)); // Simulate API call
+    
+    const mockIssues: ValidationIssue[] = [
+        { type: 'warning', field: 'Date', row: 15, message: 'Inconsistent date format detected. Standardize to YYYY-MM-DD.' , suggestedFix: "Change '15/03/2023' to '2023-03-15'"},
+        { type: 'error', field: 'Totals', row: 45, message: 'Row total does not match sum of Q1-Q4 columns. Discrepancy of $5,230.' },
+        { type: 'warning', field: 'Gross Margin %', row: 50, message: 'Calculated Gross Margin (45%) is significantly lower than industry average (65%).' },
+    ];
+    
+    const mockInsights: FinancialAnalysisInsights = {
+        trends: [
+            "Consistent QoQ revenue growth averaging 15%.",
+            "Customer Acquisition Cost (CAC) has decreased by 10% over the last two quarters.",
+            "Operating expenses show a slight upward trend, mainly in R&D."
+        ],
+        risks: [
+            "High dependency on a single marketing channel for over 70% of new leads.",
+            "Negative cash flow projected for the next two quarters if current spending continues.",
+            "Gross margin is below the typical benchmark for SaaS companies in this sector."
+        ],
+        strengths: [
+            "Strong customer retention with a low monthly churn rate of 1.2%.",
+            "Diversified revenue streams across three main product tiers.",
+            "Scalable infrastructure with low variable costs per user."
+        ],
+        recommendations: [
+            "Diversify marketing channels to reduce dependency and risk.",
+            "Review and optimize Cost of Goods Sold (COGS) to improve gross margin.",
+            "Consider a short-term credit line to manage the projected cash flow dip."
+        ]
+    };
+
+    return { issues: mockIssues, insights: mockInsights };
+};
+
+
+export const generateFinancialVisualsWithGemini = async (file?: File): Promise<FinancialVisualsOutput> => {
+    console.log("Generating Financial Visuals with file:", file?.name);
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    return {
+        charts: [
+            { title: 'Revenue Growth', type: 'bar', data: [ ['Q1', 120], ['Q2', 250], ['Q3', 380], ['Q4', 520] ] },
+            { title: 'Expense Breakdown', type: 'pie', data: [ ['R&D', 45], ['S&M', 35], ['G&A', 20] ] },
+            { title: 'Net Income Trend', type: 'line', data: [ ['Q1', -20], ['Q2', 10], ['Q3', 45], ['Q4', 80] ] },
+            { title: 'Cash Flow Projection', type: 'bar', data: [ ['Jan', 50], ['Feb', -10], ['Mar', 30], ['Apr', 60] ] },
+        ]
+    };
+};
+
+export const generateImageWithGeminiFlash = async (prompt: string, base64Image?: string, mimeType?: string): Promise<{ imageBase64: string, mimeType: string }> => {
+    try {
+        const parts = [];
+        if (base64Image && mimeType) {
+            parts.push({ inlineData: { data: base64Image, mimeType } });
+        }
+        parts.push({ text: prompt });
+
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash-image',
+            contents: { parts },
+            config: { responseModalities: [Modality.IMAGE] },
+        });
+
+        const imagePart = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+        if (!imagePart?.inlineData) throw new Error("API did not return an image from Gemini Flash.");
+        
+        return { imageBase64: imagePart.inlineData.data, mimeType: imagePart.inlineData.mimeType };
+    } catch (error) {
+        throw handleGeminiError(error, "generate image with Gemini Flash");
+    }
+};
+
+export interface StoryboardScene {
+    timestamp: string;
+    shotDescription: string;
+    caption: string;
+    audioGuide: string;
+}
+export interface StoryboardOutput {
+    title: string;
+    scenes: StoryboardScene[];
+}
+
+export const generateStoryboardWithGemini = async (prompt: string): Promise<StoryboardOutput> => {
+    const fullPrompt = `
+        You are a professional film director and storyboard artist. Based on the following prompt, create a short storyboard for a video.
+        The output must be a valid JSON object following the specified schema.
+        Generate a title and 3 to 5 scenes.
+        Each scene must have a timestamp (e.g., "00:00-00:03"), a detailed shot description, a concise caption for the slide, and an audio guide describing sound effects or music.
+
+        PROMPT: "${prompt}"
+    `;
+
+    const storyboardSchema = {
+        type: Type.OBJECT,
+        properties: {
+            title: { type: Type.STRING, description: "A creative title for the video." },
+            scenes: {
+                type: Type.ARRAY,
+                items: {
+                    type: Type.OBJECT,
+                    properties: {
+                        timestamp: { type: Type.STRING },
+                        shotDescription: { type: Type.STRING },
+                        caption: { type: Type.STRING },
+                        audioGuide: { type: Type.STRING },
+                    },
+                    required: ['timestamp', 'shotDescription', 'caption', 'audioGuide'],
+                },
+            },
+        },
+        required: ['title', 'scenes'],
+    };
+
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-pro",
+            contents: fullPrompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: storyboardSchema,
+            }
+        });
+        return JSON.parse(response.text) as StoryboardOutput;
+    } catch (error) {
+        throw handleGeminiError(error, "generate storyboard");
+    }
 };

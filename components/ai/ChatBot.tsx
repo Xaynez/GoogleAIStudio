@@ -21,7 +21,7 @@ export const ChatBot: React.FC = () => {
     useEffect(() => {
         if (isOpen) {
              chatRef.current = ai.chats.create({
-                model: 'gemini-2.5-flash-lite',
+                model: 'gemini-2.5-pro',
                 config: {
                     systemInstruction: 'You are EVOLVE AI, a helpful and concise assistant for the EVOLVE professional networking platform. Keep your answers brief and to the point.',
                 },
@@ -105,7 +105,7 @@ export const ChatBot: React.FC = () => {
                     <Bot className="h-6 w-6 text-cyan-400" />
                     <h3 className="text-lg font-bold text-white">EVOLVE Assistant</h3>
                 </div>
-                <button onClick={handleToggleOpen} title="Close chat" className="text-slate-400 hover:text-white transition-colors">
+                <button onClick={handleToggleOpen} title="Close chat" aria-label="Close chat" className="text-slate-400 hover:text-white transition-colors">
                     <X className="h-5 w-5" />
                 </button>
             </header>
@@ -147,7 +147,7 @@ export const ChatBot: React.FC = () => {
                         className="w-full bg-slate-800 border border-slate-700 rounded-full py-2 pl-4 pr-12 text-white focus:ring-2 focus:ring-cyan-500 focus:outline-none"
                         disabled={isLoading}
                     />
-                    <button onClick={handleSendMessage} disabled={isLoading} title="Send message" className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-cyan-400 disabled:opacity-50">
+                    <button onClick={handleSendMessage} disabled={isLoading} title="Send message" aria-label="Send message" className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-cyan-400 disabled:opacity-50">
                         <CornerDownLeft className="h-5 w-5" />
                     </button>
                 </div>

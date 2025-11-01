@@ -3,6 +3,7 @@ import type { UserProfile, Post, PostType } from '../../types';
 import { Send, Camera, Video, FileText, X, User, Trash2, CalendarClock, Hash, Mic, Loader, Paperclip, Bookmark } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import { cleanupTranscriptionWithGemini } from '../../services/geminiService';
+import { Tooltip } from '../common/Tooltip';
 
 interface CreatePostProps {
   userProfile: UserProfile;
@@ -188,27 +189,41 @@ export const CreatePost: React.FC<CreatePostProps> = ({ userProfile, onAddPost, 
             <div className="mt-10 ml-14">
                 <div className="flex flex-wrap items-center gap-2">
                     {/* Media Attachments */}
-                    <button onClick={() => handleSelectPostType('image')} title="Add Image" className={`p-2 rounded-full ${newPostType === 'image' ? 'bg-cyan-500/20' : 'hover:bg-slate-800'}`}><Camera className="h-5 w-5 text-cyan-400" /></button>
-                    <button onClick={() => handleSelectPostType('video')} title="Add Video" className={`p-2 rounded-full ${newPostType === 'video' ? 'bg-cyan-500/20' : 'hover:bg-slate-800'}`}><Video className="h-5 w-5 text-cyan-400" /></button>
-                    <button onClick={() => handleSelectPostType('document')} title="Add Document" className={`p-2 rounded-full ${newPostType === 'document' ? 'bg-cyan-500/20' : 'hover:bg-slate-800'}`}><Paperclip className="h-5 w-5 text-cyan-400" /></button>
+                    <Tooltip text="Add Image" position="top">
+                        <button onClick={() => handleSelectPostType('image')} className={`p-2 rounded-full ${newPostType === 'image' ? 'bg-cyan-500/20' : 'hover:bg-slate-800'}`}><Camera className="h-5 w-5 text-cyan-400" /></button>
+                    </Tooltip>
+                    <Tooltip text="Add Video" position="top">
+                        <button onClick={() => handleSelectPostType('video')} className={`p-2 rounded-full ${newPostType === 'video' ? 'bg-cyan-500/20' : 'hover:bg-slate-800'}`}><Video className="h-5 w-5 text-cyan-400" /></button>
+                    </Tooltip>
+                    <Tooltip text="Add Document" position="top">
+                        <button onClick={() => handleSelectPostType('document')} className={`p-2 rounded-full ${newPostType === 'document' ? 'bg-cyan-500/20' : 'hover:bg-slate-800'}`}><Paperclip className="h-5 w-5 text-cyan-400" /></button>
+                    </Tooltip>
 
                     {/* Live Features */}
-                    <button onClick={onOpenLiveStream} title={t('goLive')} className="p-2 rounded-full hover:bg-slate-800"><Video className="h-5 w-5 text-red-400" /></button>
-                    <button onClick={onOpenScheduleLive} title={t('scheduleLive')} className="p-2 rounded-full hover:bg-slate-800"><CalendarClock className="h-5 w-5 text-cyan-400" /></button>
+                    <Tooltip text={t('goLive')} position="top">
+                        <button onClick={onOpenLiveStream} className="p-2 rounded-full hover:bg-slate-800"><Video className="h-5 w-5 text-red-400" /></button>
+                    </Tooltip>
+                    <Tooltip text={t('scheduleLive')} position="top">
+                        <button onClick={onOpenScheduleLive} className="p-2 rounded-full hover:bg-slate-800"><CalendarClock className="h-5 w-5 text-cyan-400" /></button>
+                    </Tooltip>
 
                      {/* Input Tools */}
                     {SpeechRecognitionAPI && (
-                        <button onClick={handleToggleListen} disabled={isCleaningUpText} title="Voice to Text" className={`p-2 rounded-full transition-colors ${isListening ? 'bg-red-500/20 animate-pulse' : 'hover:bg-slate-800'} disabled:cursor-not-allowed`}>
-                            {isCleaningUpText ? (
-                                <Loader className="h-5 w-5 text-cyan-400 animate-spin" />
-                            ) : (
-                                <Mic className={`h-5 w-5 ${isListening ? 'text-red-400' : 'text-cyan-400'}`} />
-                            )}
-                        </button>
+                        <Tooltip text="Voice to Text" position="top">
+                            <button onClick={handleToggleListen} disabled={isCleaningUpText} className={`p-2 rounded-full transition-colors ${isListening ? 'bg-red-500/20 animate-pulse' : 'hover:bg-slate-800'} disabled:cursor-not-allowed`}>
+                                {isCleaningUpText ? (
+                                    <Loader className="h-5 w-5 text-cyan-400 animate-spin" />
+                                ) : (
+                                    <Mic className={`h-5 w-5 ${isListening ? 'text-red-400' : 'text-cyan-400'}`} />
+                                )}
+                            </button>
+                        </Tooltip>
                     )}
                     
                     {/* Post Actions */}
-                    <button title="Save Draft" className="p-2 rounded-full hover:bg-slate-800"><Bookmark className="h-5 w-5 text-cyan-400" /></button>
+                    <Tooltip text="Save Draft" position="top">
+                        <button className="p-2 rounded-full hover:bg-slate-800"><Bookmark className="h-5 w-5 text-cyan-400" /></button>
+                    </Tooltip>
                 </div>
                 <div className="flex justify-end mt-4">
                     <button onClick={handleCreatePost} disabled={!newPostContent.trim() && mediaFiles.length === 0} className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white font-semibold rounded-lg disabled:bg-slate-600 disabled:cursor-not-allowed hover:bg-cyan-700">

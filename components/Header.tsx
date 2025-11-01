@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, UserCircle, LayoutDashboard, Store, Shield, MessageSquare, LogOut, User, ChevronDown, Rss, Search, Plus, Eye, PlusCircle, Bell, Sun, Moon, Users, Home, Languages, Clock, TrendingUp, FileText, Globe, Map } from 'lucide-react';
+import { Bot, UserCircle, LayoutDashboard, Store, Shield, MessageSquare, LogOut, User, ChevronDown, Rss, Search, Plus, Eye, PlusCircle, Bell, Sun, Moon, Users, Home, Clock, TrendingUp, FileText, Globe, Map, Link } from 'lucide-react';
 import type { AppView, UserProfile, MarketplaceCategory, Notification, Locale, FeedItem, NetworkUser, Post, MarketplaceListing } from '../types';
-import { useTranslation, TRANSLATIONS } from '../i18n';
+import { useTranslation, TRANSLATIONS, localeManager } from '../i18n';
 import { SUPPORTED_LOCALES, NEW_MARKETPLACE_CATEGORIES } from '../constants';
 import { NotificationItem } from './notifications/NotificationItem';
+import { Tooltip } from './common/Tooltip';
+import { GoogleAppsLauncher } from './GoogleAppsLauncher';
 
 interface Suggestion {
     type: 'person' | 'post' | 'marketplace' | 'query';
@@ -38,24 +40,13 @@ interface HeaderProps {
     setSearchMode: (mode: 'evolve' | 'web') => void;
 }
 
-const EvolveLogoIcon: React.FC = () => (
-    <div className="relative h-8 w-8">
-        <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 opacity-75 blur animate-pulse"></div>
-        <svg viewBox="0 0 100 100" className="relative stroke-cyan-400">
-            <circle cx="50" cy="50" r="40" strokeWidth="8" className="stroke-purple-700/80 fill-slate-900" />
-            <path d="M30 65 L50 45 L70 65" strokeWidth="12" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="50" cy="50" r="28" strokeWidth="8" fill="none" />
-        </svg>
-    </div>
-);
-
 export const Header: React.FC<HeaderProps> = ({ 
     isAuthenticated, userProfile, onOpenProfile, onNavigate, onOpenMessages, currentView, onLogout, 
     onSelectMarketplaceCategory, activeMarketplaceCategory, onOpenCreateListing,
     notifications, onMarkAsRead, onMarkAllAsRead, theme, onToggleTheme, onSearch, searchHistory, onClearSearchHistory,
     feedItems, networkUsers, marketplaceListings, searchMode, setSearchMode
 }) => {
-  const { t, locale, setLocale } = useTranslation();
+  const { t } = useTranslation();
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
   const [inputValue, setInputValue] = useState('');
@@ -148,8 +139,6 @@ export const Header: React.FC<HeaderProps> = ({
     setOpenSubMenu(prev => (prev === menu ? null : menu));
   };
   
-  const showComplianceTab = userProfile?.role === 'Compliance Officer' || userProfile?.role === 'Admin';
-
   const handleSearchSubmit = (query: string) => {
     if (!query.trim()) return;
     setInputValue(query);
@@ -188,8 +177,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="py-4 px-6 md:px-8 flex justify-between items-center bg-white/80 dark:bg-slate-950/50 backdrop-blur-md border-b border-slate-300 dark:border-slate-800 sticky top-0 z-40 gap-4">
       <div className="flex items-center space-x-3 flex-shrink-0">
-        <EvolveLogoIcon />
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-cyan-400 bg-clip-text text-transparent hidden sm:block">EVOLVE</h1>
+        
       </div>
 
       {isAuthenticated && (
@@ -209,12 +197,20 @@ export const Header: React.FC<HeaderProps> = ({
 
             <div className="mt-2 w-full">
                 <div className="flex items-center p-1 bg-slate-200 dark:bg-slate-800 rounded-full text-sm font-semibold">
-                    <button onClick={() => setSearchMode('evolve')} className={`flex-1 text-center py-1 rounded-full flex items-center justify-center gap-2 transition-colors ${searchMode === 'evolve' ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'}`}>
-                        <Bot size={14} /> Evolve
-                    </button>
-                    <button onClick={() => setSearchMode('web')} className={`flex-1 text-center py-1 rounded-full flex items-center justify-center gap-2 transition-colors ${searchMode === 'web' ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-700'}`}>
-                        <Globe size={14} /> Web
-                    </button>
+                    <Tooltip text="Search within the EVOLVE ecosystem" position="bottom" className="flex-1">
+                        <button 
+                            onClick={() => setSearchMode('evolve')}
+                            className={`w-full text-center py-1 rounded-full flex items-center justify-center gap-2 transition-colors ${searchMode === 'evolve' ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50'}`}>
+                            <Bot size={14} /> Evolve
+                        </button>
+                    </Tooltip>
+                    <Tooltip text="Search the web using Google Search" position="bottom" className="flex-1">
+                        <button 
+                            onClick={() => setSearchMode('web')}
+                            className={`w-full text-center py-1 rounded-full flex items-center justify-center gap-2 transition-colors ${searchMode === 'web' ? 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-700/50'}`}>
+                            <Globe size={14} /> Web
+                        </button>
+                    </Tooltip>
                 </div>
             </div>
 
@@ -273,11 +269,14 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="flex items-center space-x-2 md:space-x-4 flex-shrink-0">
           {isAuthenticated && userProfile && (
             <>
+                <GoogleAppsLauncher />
                 <div className="relative" ref={userDropdownRef}>
-                    <button onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)} className="relative flex items-center space-x-2 p-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">
-                        <UserCircle className="h-6 w-6 text-slate-600 dark:text-slate-300" />
-                        {unreadCount > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">{unreadCount}</span>}
-                    </button>
+                    <Tooltip text="Profile, settings, and more" position="bottom">
+                        <button onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)} aria-label="Open user menu" className="relative flex items-center space-x-2 p-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors border border-slate-200 dark:border-slate-700">
+                            <UserCircle className="h-6 w-6 text-slate-600 dark:text-slate-300" />
+                            {unreadCount > 0 && <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">{unreadCount}</span>}
+                        </button>
+                    </Tooltip>
 
                     {isUserDropdownOpen && (
                         <div className="absolute right-0 mt-2 w-80 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl z-50 animate-dropdown-enter origin-top-right p-2">
@@ -290,10 +289,11 @@ export const Header: React.FC<HeaderProps> = ({
                                 <NavItem view="dashboard" icon={<LayoutDashboard size={18} />} label={t('dashboard')} />
                                 <NavItem view="marketplace" icon={<Store size={18} />} label={t('marketplace')} />
                                 <NavItem view="network" icon={<Users size={18} />} label="My Network" />
-                                {showComplianceTab && <NavItem view="compliance" icon={<Shield size={18} />} label={t('compliance')} />}
+                                <NavItem view="connectors" icon={<Link size={18} />} label="API Integrations" />
+                                <NavItem view="governanceHub" icon={<Shield size={18} />} label={t('governanceHub')} />
 
                                 <li>
-                                    <button onClick={() => toggleSubMenu('notifications')} className="w-full text-left flex items-center justify-between gap-3 px-4 py-2.5 text-sm rounded-md transition-colors text-slate-300 hover:bg-slate-800">
+                                    <button type="button" onClick={() => toggleSubMenu('notifications')} className="w-full text-left flex items-center justify-between gap-3 px-4 py-2.5 text-sm rounded-md transition-colors text-slate-300 hover:bg-slate-800">
                                         <span className="flex items-center gap-3 relative">
                                             <Bell size={18} /> Notifications
                                             {unreadCount > 0 && <span className="flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">{unreadCount}</span>}
@@ -328,32 +328,13 @@ export const Header: React.FC<HeaderProps> = ({
                                 </button></li>
                                 
                                 <li>
-                                    <button onClick={onToggleTheme} className="w-full text-left flex items-center justify-between gap-3 px-4 py-2.5 text-sm rounded-md transition-colors text-slate-300 hover:bg-slate-800">
+                                    <button type="button" onClick={onToggleTheme} className="w-full text-left flex items-center justify-between gap-3 px-4 py-2.5 text-sm rounded-md transition-colors text-slate-300 hover:bg-slate-800">
                                         <span className="flex items-center gap-3">
                                             {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
                                             Appearance
                                         </span>
                                         <span className="text-xs text-slate-500 capitalize">{theme}</span>
                                     </button>
-                                </li>
-
-                                <li>
-                                    <button onClick={() => toggleSubMenu('language')} className="w-full text-left flex items-center justify-between gap-3 px-4 py-2.5 text-sm rounded-md transition-colors text-slate-300 hover:bg-slate-800">
-                                        <span className="flex items-center gap-3"><Languages size={18} /> Language</span>
-                                        <span className="text-xs text-slate-500">{locale.flag}</span>
-                                    </button>
-                                     {openSubMenu === 'language' && (
-                                        <ul className="pl-6 mt-1 space-y-1 max-h-48 overflow-y-auto">
-                                            {SUPPORTED_LOCALES.map(loc => (
-                                                <li key={loc.code}>
-                                                    <button onClick={() => { setLocale(loc); }} className={`w-full text-left flex items-center gap-3 px-4 py-2 text-sm rounded-md ${locale.code === loc.code ? 'text-cyan-400 font-semibold bg-slate-800' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'}`}>
-                                                        <span>{loc.flag}</span>
-                                                        <span className="flex-grow">{loc.name}</span>
-                                                    </button>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
                                 </li>
                                 
                                 <li className="border-t border-slate-800 my-1"></li>

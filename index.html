@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
@@ -20,12 +20,53 @@
         }
       })();
     </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       // Configure Tailwind CSS to use class-based dark mode.
       // This MUST come AFTER the main tailwind script to have access to the `tailwind` object.
       tailwind.config = {
         darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Open Sans', 'sans-serif'],
+              display: ['Montserrat', 'sans-serif'],
+            },
+            colors: {
+              'surface': {
+                bg: 'var(--surface-bg)',
+                elevated: 'var(--surface-elevated)',
+                card: 'var(--surface-card)',
+                modal: 'var(--surface-modal)',
+                input: 'var(--surface-input)',
+              },
+              'text': {
+                primary: 'var(--text-primary)',
+                secondary: 'var(--text-secondary)',
+                muted: 'var(--text-muted)',
+                inverted: 'var(--text-inverted)',
+                link: 'var(--text-link)',
+              },
+              'border': {
+                subtle: 'var(--border-subtle)',
+                input: 'var(--border-input)',
+                interactive: 'var(--border-interactive)',
+              },
+              'brand-cyan': 'var(--brand-cyan)',
+              'brand-violet': 'var(--brand-violet)',
+            },
+            boxShadow: {
+              soft: 'var(--shadow-soft)',
+            },
+            gradientColorStops: {
+              'heading-start': 'var(--heading-gradient-start)',
+              'heading-end': 'var(--heading-gradient-end)',
+            }
+          },
+        },
       }
     </script>
   <script type="importmap">
@@ -43,6 +84,103 @@
 }
 </script>
 <style>
+  :root {
+    --brand-cyan: #22D3EE; /* cyan-400 */
+    --brand-violet: #9333EA; /* purple-600 */
+    --brand-navy: #0B1B33;
+
+    /* Light Theme Tokens */
+    --surface-bg: #FFFFFF;
+    --surface-elevated: #F8FAFC; /* slate-50 */
+    --surface-card: #FFFFFF;
+    --surface-modal: #FFFFFF;
+    --surface-input: #F1F5F9; /* slate-100 */
+
+    --text-primary: #1E293B; /* slate-800 */
+    --text-secondary: #475569; /* slate-600 */
+    --text-muted: #94A3B8; /* slate-400 */
+    --text-inverted: #FFFFFF;
+    --text-link: var(--brand-violet);
+
+    --heading-gradient-start: var(--brand-violet);
+    --heading-gradient-end: var(--brand-cyan);
+
+    --border-subtle: #E2E8F0; /* slate-200 */
+    --border-input: #CBD5E1; /* slate-300 */
+    --border-interactive: #67E8F9; /* cyan-300 */
+    
+    --shadow-soft: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+  }
+
+  html.dark {
+    /* Dark Theme Tokens */
+    --brand-cyan: #67E8F9; /* cyan-300 */
+    --brand-violet: #A855F7; /* purple-500 */
+    --surface-bg: #060918;
+    --surface-elevated: #0F172A; /* slate-900 */
+    --surface-card: #0B1B33; /* slate-800 */
+    --surface-modal: #1E293B; /* slate-800 */
+    --surface-input: #334155; /* slate-700 */
+    
+    --text-primary: #E2E8F0; /* slate-200 */
+    --text-secondary: #94A3B8; /* slate-400 */
+    --text-muted: #64748B; /* slate-500 */
+    --text-inverted: #1E293B;
+    --text-link: var(--brand-cyan);
+
+    --heading-gradient-start: var(--brand-violet);
+    --heading-gradient-end: var(--brand-cyan);
+
+    --border-subtle: #334155; /* slate-700 */
+    --border-input: #475569; /* slate-600 */
+    --border-interactive: var(--brand-cyan);
+
+    --shadow-soft: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  }
+
+  /* Base body styles */
+  body {
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  /* Gradient heading style */
+  .heading-gradient {
+    background-image: linear-gradient(to right, var(--heading-gradient-start), var(--heading-gradient-end));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600; /* semibold */
+    letter-spacing: normal;
+  }
+
+  /* General link styling */
+  .link-gradient {
+    background-image: linear-gradient(to right, var(--brand-violet), var(--brand-cyan));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .link-gradient:hover {
+    background-image: linear-gradient(to right, var(--brand-cyan), var(--brand-cyan));
+    text-decoration: underline;
+  }
+
+  /* For screen-reader accessibility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -106,6 +244,30 @@
       transform: translateX(-50px) scale(0.98);
     }
   }
+  @keyframes light-beam-anim {
+    0% { transform: translateX(-150%) skewX(-20deg); opacity: 0; }
+    10% { opacity: 1; }
+    20% { transform: translateX(250%) skewX(-20deg); opacity: 0; }
+    100% { transform: translateX(250%) skewX(-20deg); opacity: 0; }
+  }
+  @keyframes particle-float-1 {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(40px, -60px); }
+    50% { transform: translate(-30px, 50px); }
+    75% { transform: translate(50px, 20px); }
+  }
+  @keyframes particle-float-2 {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-50px, 70px); }
+    50% { transform: translate(40px, -40px); }
+    75% { transform: translate(-20px, -60px); }
+  }
+  @keyframes particle-float-3 {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(80px, 80px); }
+    50% { transform: translate(10px, -20px); }
+    75% { transform: translate(-40px, 30px); }
+  }
 
   .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
   .animate-fade-out { animation: fadeOut 0.3s ease-out forwards; }
@@ -150,9 +312,138 @@
     background: rgb(34 211 238);
     animation: fadeIn 0.2s;
   }
+
+  .pricing-card-glow {
+    position: relative;
+    z-index: 1;
+  }
+  .pricing-card-glow::before {
+    content: '';
+    position: absolute;
+    inset: -8px; /* Controls the size of the glow */
+    z-index: -1;
+    background: linear-gradient(to right, var(--brand-violet), var(--brand-cyan));
+    border-radius: 1rem; /* matches rounded-2xl */
+    filter: blur(20px);
+    opacity: 0.75;
+    transition: filter 0.3s ease, opacity 0.3s ease;
+  }
+  .pricing-card-glow:hover::before {
+    filter: blur(28px); /* Brighter/larger blur on hover */
+    opacity: 1;
+  }
+
+  /* Text-based Logo Styles */
+  .logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .logo-text {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 5rem;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    background-image: linear-gradient(to right, var(--heading-gradient-start), var(--heading-gradient-end));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .logo-o {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0.1em;
+    position: relative;
+    background-image: linear-gradient(to right, var(--brand-violet), var(--brand-cyan));
+    padding: 4px;
+  }
+
+  .logo-o-inner {
+    width: 100%;
+    height: 100%;
+    background-color: var(--brand-navy);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-symbol {
+    width: 100%;
+    height: 100%;
+    color: var(--brand-cyan);
+    filter: drop-shadow(0 0 2px var(--brand-cyan));
+    transition: all 0.4s ease-in-out;
+  }
+  
+  .logo-tagline {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+    color: var(--text-primary);
+  }
+  
+  /* Glow effect for the 'O' */
+  .logo-glow {
+    position: relative;
+  }
+  .logo-glow::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 150%;
+    height: 150%;
+    filter: blur(40px);
+    background: radial-gradient(circle, rgba(103, 232, 249, 0.6) 0%, rgba(168, 85, 247, 0.45) 70%, transparent 100%);
+    z-index: -1;
+    transition: all 0.4s ease-in-out;
+    border-radius: 50%;
+  }
+
+  .logo-container:hover .logo-glow::after {
+    filter: blur(55px);
+    transform: translate(-50%, -50%) scale(1.1);
+    background: radial-gradient(circle, rgba(103, 232, 249, 0.75) 0%, rgba(168, 85, 247, 0.6) 70%, transparent 100%);
+  }
+
+  .logo-container:hover .logo-symbol {
+    filter: drop-shadow(0 0 4px var(--brand-cyan));
+    transform: scale(1.05);
+  }
+
+  html:not(.dark) .logo-container {
+      filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+  }
+  
+  @media (max-width: 768px) {
+    .logo-text { font-size: 3.5rem; }
+    .logo-o { width: 3.2rem; height: 3.2rem; }
+    .logo-tagline { font-size: 0.9rem; }
+  }
+
+  @media (max-width: 480px) {
+    .logo-text { font-size: 2.5rem; letter-spacing: 0em;}
+    .logo-o { width: 2.3rem; height: 2.3rem; }
+    .logo-tagline { font-size: 0.7rem; }
+  }
 </style>
 </head>
-  <body class="bg-white dark:bg-[#060918]">
+  <body class="bg-surface-bg text-text-primary font-sans">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

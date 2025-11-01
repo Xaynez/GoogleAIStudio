@@ -76,8 +76,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ listing, onC
 
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" aria-modal="true" role="dialog">
-            <div className={`bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-4xl transform transition-all duration-300 ease-out ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}>
-                <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+            <div className={`bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col transform transition-all duration-300 ease-out ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}>
+                <div className="p-6 border-b border-slate-800 flex justify-between items-center flex-shrink-0">
                     <div>
                         <h2 className="text-xl font-bold text-white flex items-center gap-2"><ShieldCheck className="text-cyan-400"/> {t('transactionRoomTitle')}</h2>
                         <p className="text-sm text-slate-400 truncate max-w-md">{t('transactionFor')} {listing.title.originalText}</p>
@@ -87,7 +87,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ listing, onC
                     </button>
                 </div>
 
-                <div className="p-6 max-h-[70vh] overflow-y-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="p-6 flex-grow overflow-y-auto grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Left Column - Stepper & Actions */}
                     <div className="md:col-span-1">
                         <h3 className="font-bold text-white mb-4">{t('transactionStatus')}</h3>
@@ -161,7 +161,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({ listing, onC
                     </div>
                 </div>
 
-                 <div className="p-4 bg-slate-900/50 border-t border-slate-800 flex justify-end">
+                 <div className="p-4 bg-slate-900/50 border-t border-slate-800 flex justify-end flex-shrink-0">
                     {transaction.status !== 'Completed' &&
                         <button onClick={advanceStatus} className="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700">
                            {transaction.status === 'Offer' && t('confirmOffer')}

@@ -33,7 +33,7 @@ const MultiSelectChip: React.FC<{
                     onClick={() => handleToggle(option)}
                     className={`px-3 py-1.5 text-sm font-medium rounded-full transition-colors ${
                         selected.includes(option)
-                            ? 'bg-cyan-500 text-slate-900'
+                            ? 'bg-gradient-to-r from-brand-violet to-brand-cyan text-white'
                             : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                     }`}
                 >
@@ -167,118 +167,56 @@ export const Step2Profile: React.FC<Step2Props> = ({ data, updateData }) => {
                         <Briefcase className="h-5 w-5" /> {t('workExperience')}
                     </label>
                     <div className="space-y-4">
-                        {data.experience.map((entry, index) => (
-                            <div key={index} className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 space-y-4 relative">
-                                <button onClick={() => removeExperienceEntry(index)} title="Remove experience entry" className="absolute top-2 right-2 text-slate-500 hover:text-red-400 transition-colors">
-                                    <Trash2 className="h-4 w-4" />
-                                </button>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="text-xs font-medium text-slate-400">Role</label>
-                                        <input type="text" value={entry.role} onChange={(e) => handleExperienceChange(index, 'role', e.target.value)} placeholder="e.g., Product Manager" className="w-full mt-1 bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none" />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-medium text-slate-400">Company</label>
-                                        <input type="text" value={entry.company} onChange={(e) => handleExperienceChange(index, 'company', e.target.value)} placeholder="e.g., Tech Solutions Inc." className="w-full mt-1 bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none" />
-                                    </div>
+                        {data.experience.map((exp, index) => (
+                            <div key={index} className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 space-y-3 relative">
+                                <button onClick={() => removeExperienceEntry(index)} className="absolute top-2 right-2 text-slate-500 hover:text-red-400"><Trash2 className="h-4 w-4" /></button>
+                                <input type="text" placeholder="Role" value={exp.role} onChange={(e) => handleExperienceChange(index, 'role', e.target.value)} className="w-full bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none" />
+                                <input type="text" placeholder="Company" value={exp.company} onChange={(e) => handleExperienceChange(index, 'company', e.target.value)} className="w-full bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none" />
+                                <div className="flex gap-4">
+                                    <input type="month" placeholder="Start Date" value={exp.startDate} onChange={(e) => handleExperienceChange(index, 'startDate', e.target.value)} className="w-full bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none" />
+                                    <input type="month" placeholder="End Date" value={exp.endDate} onChange={(e) => handleExperienceChange(index, 'endDate', e.target.value)} className="w-full bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none" />
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                     <div>
-                                        <label className="text-xs font-medium text-slate-400">Start Date</label>
-                                        <input type="month" value={entry.startDate} onChange={(e) => handleExperienceChange(index, 'startDate', e.target.value)} className="w-full mt-1 bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none" />
-                                    </div>
-                                     <div>
-                                        <label className="text-xs font-medium text-slate-400">End Date</label>
-                                        <input type="month" value={entry.endDate} onChange={(e) => handleExperienceChange(index, 'endDate', e.target.value)} className="w-full mt-1 bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-medium text-slate-400">Description</label>
-                                    <textarea value={entry.description} onChange={(e) => handleExperienceChange(index, 'description', e.target.value)} placeholder="Briefly describe your responsibilities and achievements..." className="w-full mt-1 bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none resize-y" rows={3}></textarea>
-                                </div>
+                                <textarea placeholder="Description" value={exp.description} onChange={(e) => handleExperienceChange(index, 'description', e.target.value)} className="w-full bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white resize-y focus:ring-1 focus:ring-cyan-500 focus:outline-none" rows={3}></textarea>
                             </div>
                         ))}
-                         <button onClick={addExperienceEntry} className="w-full flex items-center justify-center gap-2 text-sm py-2 px-4 bg-slate-800 text-cyan-400 font-semibold rounded-lg border border-slate-700 hover:bg-slate-700 transition-colors">
+                        <button onClick={addExperienceEntry} className="w-full flex items-center justify-center gap-2 text-sm py-2 px-4 bg-slate-800 text-cyan-400 font-semibold rounded-lg border border-slate-700 hover:bg-slate-700">
                             <Plus className="h-4 w-4" /> {t('addExperience')}
                         </button>
                     </div>
                 </div>
 
                 {/* Education */}
-                <div>
+                 <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
                         <GraduationCap className="h-5 w-5" /> {t('education')}
                     </label>
                     <div className="space-y-4">
-                        {data.education.map((entry, index) => (
-                            <div key={index} className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 space-y-4 relative">
-                                <button onClick={() => removeEducationEntry(index)} title="Remove education entry" className="absolute top-2 right-2 text-slate-500 hover:text-red-400 transition-colors">
-                                    <Trash2 className="h-4 w-4" />
-                                </button>
+                        {data.education.map((edu, index) => (
+                            <div key={index} className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 space-y-3 relative">
+                                <button onClick={() => removeEducationEntry(index)} className="absolute top-2 right-2 text-slate-500 hover:text-red-400"><Trash2 className="h-4 w-4" /></button>
+                                <input type="text" placeholder="Institution Name" value={edu.institutionName} onChange={(e) => handleEducationChange(index, 'institutionName', e.target.value)} className="w-full bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none" />
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="text-xs font-medium text-slate-400">Degree Type</label>
-                                        <div className="relative mt-1">
-                                            <select
-                                                value={entry.degreeType}
-                                                onChange={(e) => handleEducationChange(index, 'degreeType', e.target.value)}
-                                                className="w-full appearance-none bg-slate-700 border border-slate-600 rounded-md py-2 pl-3 pr-8 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none"
-                                            >
-                                                <option value="" disabled>Select a degree</option>
-                                                {DEGREE_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
-                                            </select>
-                                            <ChevronsUpDown className="h-4 w-4 absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                                        </div>
+                                     <div className="relative">
+                                        <select value={edu.degreeType} onChange={(e) => handleEducationChange(index, 'degreeType', e.target.value)} className="w-full appearance-none bg-slate-700 border border-slate-600 rounded-md py-2 pl-3 pr-8 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none">
+                                            <option value="" disabled>Select a degree</option>
+                                            {DEGREE_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
+                                        </select>
+                                        <ChevronsUpDown className="h-4 w-4 absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                                     </div>
-                                    <div>
-                                        <label className="text-xs font-medium text-slate-400">Major/Field of Study</label>
-                                        <input 
-                                            type="text" 
-                                            value={entry.fieldOfStudy}
-                                            onChange={(e) => handleEducationChange(index, 'fieldOfStudy', e.target.value)}
-                                            placeholder="e.g., Computer Science"
-                                            className="w-full mt-1 bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none"
-                                        />
-                                    </div>
+                                    <input type="text" placeholder="Field of Study" value={edu.fieldOfStudy} onChange={(e) => handleEducationChange(index, 'fieldOfStudy', e.target.value)} className="w-full bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none" />
                                 </div>
-                                <div>
-                                    <label className="text-xs font-medium text-slate-400">Institution Name</label>
-                                    <input 
-                                        type="text" 
-                                        value={entry.institutionName}
-                                        onChange={(e) => handleEducationChange(index, 'institutionName', e.target.value)}
-                                        placeholder="e.g., University of Example"
-                                        className="w-full mt-1 bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none"
-                                    />
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                     <div>
-                                        <label className="text-xs font-medium text-slate-400">Start Date</label>
-                                        <input 
-                                            type="month"
-                                            value={entry.startDate}
-                                            onChange={(e) => handleEducationChange(index, 'startDate', e.target.value)}
-                                            className="w-full mt-1 bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none"
-                                        />
-                                    </div>
-                                     <div>
-                                        <label className="text-xs font-medium text-slate-400">End Date</label>
-                                        <input 
-                                            type="month"
-                                            value={entry.endDate}
-                                            onChange={(e) => handleEducationChange(index, 'endDate', e.target.value)}
-                                            className="w-full mt-1 bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none"
-                                        />
-                                    </div>
+                                <div className="flex gap-4">
+                                    <input type="month" value={edu.startDate} onChange={(e) => handleEducationChange(index, 'startDate', e.target.value)} className="w-full bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none" />
+                                    <input type="month" value={edu.endDate} onChange={(e) => handleEducationChange(index, 'endDate', e.target.value)} className="w-full bg-slate-700 border border-slate-600 rounded-md py-2 px-3 text-white focus:ring-1 focus:ring-cyan-500 focus:outline-none" />
                                 </div>
                             </div>
                         ))}
-                         <button onClick={addEducationEntry} className="w-full flex items-center justify-center gap-2 text-sm py-2 px-4 bg-slate-800 text-cyan-400 font-semibold rounded-lg border border-slate-700 hover:bg-slate-700 transition-colors">
+                        <button onClick={addEducationEntry} className="w-full flex items-center justify-center gap-2 text-sm py-2 px-4 bg-slate-800 text-cyan-400 font-semibold rounded-lg border border-slate-700 hover:bg-slate-700">
                             <Plus className="h-4 w-4" /> {t('addEducation')}
                         </button>
                     </div>
                 </div>
-
+                
                 {/* Languages */}
                 <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
@@ -290,13 +228,13 @@ export const Step2Profile: React.FC<Step2Props> = ({ data, updateData }) => {
                         onChange={(selected) => updateData({ languages: selected })}
                     />
                 </div>
-
+                
                 {/* Industries */}
-                <div>
+                 <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
                         <Building2 className="h-5 w-5" /> {t('primaryIndustries')}
                     </label>
-                     <MultiSelectChip 
+                    <MultiSelectChip 
                         options={INDUSTRIES}
                         selected={data.industries}
                         onChange={(selected) => updateData({ industries: selected })}

@@ -108,6 +108,61 @@ export const CalendarSyncModal: React.FC<CalendarSyncModalProps> = ({ isOpen, on
 
     if (!isOpen) return null;
 
+    const renderContent = () => {
+        if (!isConnected) {
+            return (
+                <div className="text-center">
+                    <h3 className="text-lg font-bold text-white">Connect Your Calendar</h3>
+                    <p className="mt-2 text-slate-400 max-w-md mx-auto">Allow EVOLVE to access your Google Calendar to sync important events and set AI-powered reminders.</p>
+                    <button onClick={handleConnect} className="mt-6 px-6 py-3 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-700 transition-colors">
+                        Connect to Google Calendar
+                    </button>
+                </div>
+            );
+        }
+        if (isSynced) {
+             return (
+                <div className="text-center animate-scale-in">
+                    <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-white">Sync Complete!</h3>
+                    <p className="mt-2 text-slate-400">Your selected events have been synced.</p>
+                </div>
+            );
+        }
+        return (
+            <div>
+                <div className="mb-4">
+                    <h3 className="text-lg font-bold text-white">Select events to sync</h3>
+                    <p className="mt-1 text-slate-400">Choose which events to import and set AI reminder preferences.</p>
+                </div>
+                <div className="space-y-3">
+                    {MOCK_EVENTS.map(event => (
+                        <div key={event.id} className="flex gap-4 p-3 bg-slate-800/50 rounded-lg">
+                            <AnimatedCheckbox checked={!!selectedEvents[event.id]} onChange={() => handleToggleEvent(event.id)} />
+                            <div className="flex-grow">
+                                <p className="font-semibold text-white">{event.title}</p>
+                                <p className="text-sm text-slate-400">{event.time}</p>
+                                {selectedEvents[event.id] && (
+                                    <div className="mt-2 pt-2 border-t border-slate-700 flex items-center gap-4">
+                                        <p className="text-sm font-semibold text-cyan-400">AI Reminders:</p>
+                                        <label className="flex items-center gap-1.5 text-sm cursor-pointer">
+                                            <input type="checkbox" checked={selectedEvents[event.id].email} onChange={() => handleToggleReminder(event.id, 'email')} className="h-4 w-4 rounded bg-slate-700 border-slate-600 text-cyan-500 focus:ring-cyan-600"/>
+                                            <Mail size={14}/> Email
+                                        </label>
+                                        <label className="flex items-center gap-1.5 text-sm cursor-pointer">
+                                            <input type="checkbox" checked={selectedEvents[event.id].sms} onChange={() => handleToggleReminder(event.id, 'sms')} className="h-4 w-4 rounded bg-slate-700 border-slate-600 text-cyan-500 focus:ring-cyan-600"/>
+                                            <MessageSquare size={14}/> SMS
+                                        </label>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4" aria-modal="true" role="dialog">
             <div className={`bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 ease-out ${isClosing ? 'animate-scale-out' : 'animate-scale-in'}`}>
@@ -122,65 +177,17 @@ export const CalendarSyncModal: React.FC<CalendarSyncModalProps> = ({ isOpen, on
                 </div>
 
                 <div className="p-6 max-h-[70vh] overflow-y-auto">
-                    {!isConnected ? (
-                        <div className="text-center">
-                            <h3 className="text-lg text-slate-200 mb-2">Connect Your Work Calendar</h3>
-                            <p className="text-slate-400 mb-6">Allow EVOLVE to access your calendar (e.g., Google, Outlook) to sync important events and set AI-powered reminders.</p>
-                            <button onClick={handleConnect} className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300">
-                                Connect to Google Calendar
-                            </button>
-                        </div>
-                    ) : isSynced ? (
-                        <div className="text-center py-12">
-                            <CheckCircle className="h-16 w-16 text-green-400 mx-auto mb-4 animate-pulse" />
-                            <h3 className="text-2xl font-bold text-white">Sync Complete!</h3>
-                            <p className="text-slate-300">Your selected events have been synced.</p>
-                        </div>
-                    ) : (
-                        <div>
-                            <h3 className="text-lg text-slate-200 mb-1">Select events to sync</h3>
-                            <p className="text-sm text-slate-400 mb-4">Choose which events to import and set AI reminder preferences.</p>
-                            <div className="space-y-3">
-                                {MOCK_EVENTS.map(event => (
-                                    <div key={event.id} className={`p-4 rounded-lg border transition-all duration-300 ${selectedEvents[event.id] ? 'bg-slate-800/70 border-cyan-500/50' : 'bg-slate-800/40 border-slate-700'}`}>
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex items-start gap-3">
-                                                <AnimatedCheckbox
-                                                    checked={!!selectedEvents[event.id]}
-                                                    onChange={() => handleToggleEvent(event.id)}
-                                                />
-                                                <div>
-                                                    <p className="font-semibold text-slate-100">{event.title}</p>
-                                                    <p className="text-sm text-slate-400">{event.time}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {selectedEvents[event.id] && (
-                                            <div className="mt-3 pl-8 flex items-center gap-4">
-                                                <span className="text-sm font-medium text-slate-300">AI Reminders:</span>
-                                                <button onClick={() => handleToggleReminder(event.id, 'email')} className={`flex items-center gap-1.5 text-sm px-2 py-1 rounded ${selectedEvents[event.id].email ? 'bg-cyan-500/20 text-cyan-300' : 'bg-slate-700 text-slate-400'}`}>
-                                                    <Mail className="h-4 w-4" /> Email
-                                                </button>
-                                                <button onClick={() => handleToggleReminder(event.id, 'sms')} className={`flex items-center gap-1.5 text-sm px-2 py-1 rounded ${selectedEvents[event.id].sms ? 'bg-cyan-500/20 text-cyan-300' : 'bg-slate-700 text-slate-400'}`}>
-                                                    <MessageSquare className="h-4 w-4" /> SMS
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    {renderContent()}
                 </div>
 
                 {isConnected && !isSynced && (
                     <div className="p-6 bg-slate-900/50 border-t border-slate-800 flex justify-end">
-                        <button
+                        <button 
                             onClick={handleSync}
-                            disabled={numSelected === 0 || isSyncing}
-                            className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-all duration-300"
+                            disabled={isSyncing || numSelected === 0}
+                            className="px-6 py-3 bg-cyan-600 text-white font-semibold rounded-lg shadow-md hover:bg-cyan-700 disabled:bg-slate-600 disabled:cursor-not-allowed transition-all"
                         >
-                            {isSyncing ? 'Syncing...' : `Sync ${numSelected} Event${numSelected !== 1 ? 's' : ''}`}
+                            {isSyncing ? "Syncing..." : `Sync ${numSelected} Event(s)`}
                         </button>
                     </div>
                 )}
